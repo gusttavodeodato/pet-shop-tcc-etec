@@ -21,6 +21,8 @@ target/
 resources/
 target/
 .mvn/
+src/main/resources/generate.requests.http
+
 
 
 ### NetBeans ###

@@ -34,10 +34,6 @@ public class ServicoController {
         return servicoService.salvarServico(servico);
     }
 
-    /*@PutMapping("/{id}")
-    public ResponseEntity<Servico> atualizarServico(@PathVariable Long id, @RequestBody Servico servicoNovo) {
-        return servicoService.atualizarServico(servicoNovo)
-    }*/
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarServico(@PathVariable Long id) {

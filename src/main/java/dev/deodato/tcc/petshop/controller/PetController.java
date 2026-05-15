@@ -1,11 +1,13 @@
 package dev.deodato.tcc.petshop.controller;
 
-import dev.deodato.tcc.petshop.model.Pet;
+import dev.deodato.tcc.petshop.dto.pet.PetRequest;
+import dev.deodato.tcc.petshop.dto.pet.PetResponse;
 import dev.deodato.tcc.petshop.service.PetService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/pets")
@@ -17,26 +19,30 @@ public class PetController {
         this.petService = petService;
     }
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public PetResponse cadastarPet(@RequestBody PetRequest petRequest) {
+        return petService.cadastrarPet(petRequest);
+    }
+
     @GetMapping
-    public List<Pet> listarPets() {
-        return petService.listarPets();
+    public Page<PetResponse> listarPets(Pageable pageable) {
+        return petService.listarPets(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pet> buscarPetId(@PathVariable Long id) {
-        return petService.buscarPetId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public PetResponse buscarPetPorId(@PathVariable Long id) {
+        return petService.buscarPetPorId(id);
     }
 
-    @PostMapping
-    public Pet criarPet(@RequestBody Pet pet) {
-        return petService.salvarPet(pet);
+    @PutMapping("/{id}")
+    public PetResponse atualizarPetPorId(@PathVariable Long id, @RequestBody PetRequest petRequest) {
+        return petService.atualizarPetPorId(id, petRequest);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarPetId(@PathVariable Long id) {
-        petService.deletarPet(id);
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluirPet(@PathVariable Long id) {
+        petService.excluirPet(id);
     }
 }

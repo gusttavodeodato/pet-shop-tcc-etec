@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,6 +24,19 @@ public class Pet {
 
     private String nome;
     private String raca;
+
+    private LocalDateTime criadoEm;
+    private LocalDateTime atualizadoEm;
+
+    @PrePersist
+    public void prePersist() {
+        criadoEm = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        atualizadoEm = LocalDateTime.now();
+    }
 
 
     // relacionamento muitos para muitos entre pet e tutor

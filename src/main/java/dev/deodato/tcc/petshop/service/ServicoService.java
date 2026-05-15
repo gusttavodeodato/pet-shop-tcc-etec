@@ -29,10 +29,6 @@ public class ServicoService {
         return servicoRepository.save(servico);
     }
 
-    public Servico atualizarServico(Servico servico) {
-        return servicoRepository.save(servico);
-    }
-
     public void deletarServico(@PathVariable Long id) {
         servicoRepository.deleteById(id);
     }

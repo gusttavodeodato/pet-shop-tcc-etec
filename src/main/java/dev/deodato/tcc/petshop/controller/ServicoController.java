@@ -1,11 +1,13 @@
 package dev.deodato.tcc.petshop.controller;
 
-import dev.deodato.tcc.petshop.model.Servico;
+import dev.deodato.tcc.petshop.dto.servico.ServicoRequest;
+import dev.deodato.tcc.petshop.dto.servico.ServicoResponse;
 import dev.deodato.tcc.petshop.service.ServicoService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/servicos")
@@ -17,27 +19,31 @@ public class ServicoController {
         this.servicoService = servicoService;
     }
 
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ServicoResponse criarServico(@RequestBody ServicoRequest servicoRequest) {
+        return servicoService.criarServico(servicoRequest);
+    }
+
     @GetMapping
-    public List<Servico> listarServicos() {
-        return servicoService.listarServicos();
+    public Page<ServicoResponse> listarServicos(Pageable pageable) {
+        return servicoService.listarServicos(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Servico> buscarServicoId(@PathVariable Long id) {
-        return servicoService.buscarServicoId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ServicoResponse buscarServicoPorId(@PathVariable Long id) {
+        return servicoService.buscarServicoPorId(id);
     }
 
-    @PostMapping
-    public Servico criarServico(@RequestBody Servico servico) {
-        return servicoService.salvarServico(servico);
+    @PutMapping("/{id}")
+    public ServicoResponse atualizarServicoPorId(@PathVariable Long id, @RequestBody ServicoRequest servicoRequest) {
+        return servicoService.atualizarServicoPorId(id, servicoRequest);
     }
-
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarServico(@PathVariable Long id) {
-        servicoService.deletarServico(id);
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluirServicoPorId(@PathVariable Long id) {
+        servicoService.excluirServico(id);
     }
 }

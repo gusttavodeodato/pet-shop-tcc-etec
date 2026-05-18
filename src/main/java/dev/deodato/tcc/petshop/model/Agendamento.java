@@ -23,22 +23,15 @@ public class Agendamento {
 
     private LocalDateTime dataHora;
 
-    private LocalDateTime criadoEm;
-
-    @PrePersist
-    public void criadoEm() {
-        criadoEm = LocalDateTime.now();
-    }
-
     @Enumerated(EnumType.STRING)
     private StatusAgendamento status;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id", nullable = false)
     private Pet pet;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "servico_id", nullable = false)
     private Servico servico;
 

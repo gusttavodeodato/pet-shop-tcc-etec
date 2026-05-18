@@ -1,7 +1,11 @@
 package dev.deodato.tcc.petshop.service;
 
+import dev.deodato.tcc.petshop.dto.servico.ServicoRequest;
+import dev.deodato.tcc.petshop.dto.servico.ServicoResponse;
 import dev.deodato.tcc.petshop.model.Servico;
 import dev.deodato.tcc.petshop.repository.ServicoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -17,19 +21,38 @@ public class ServicoService {
         this.servicoRepository = servicoRepository;
     }
 
-    public List<Servico> listarServicos() {
-        return servicoRepository.findAll();
+    public ServicoResponse criarServico(ServicoRequest request) {
+        if(request.nome() == null) {
+            throw new RuntimeException("O tipo de serviço deve não pode ser nulo");
+        }
+
+        Servico servico = request.toEntity();
+        Servico servicoSalvo = servicoRepository.save(servico);
+        return ServicoResponse.fromEntity(servicoSalvo);
     }
 
-    public Optional<Servico> buscarServicoId(@PathVariable Long id) {
-        return servicoRepository.findById(id);
+    public Page<ServicoResponse> listarServicos(Pageable pageable) {
+        return servicoRepository.findAll(pageable).map(ServicoResponse::fromEntity);
     }
 
-    public Servico salvarServico(Servico servico) {
-        return servicoRepository.save(servico);
+    public ServicoResponse buscarServicoPorId(Long id) {
+       Servico servico = buscarEntidadePorId(id);
+       return ServicoResponse.fromEntity(servico);
     }
 
-    public void deletarServico(@PathVariable Long id) {
-        servicoRepository.deleteById(id);
+    public ServicoResponse atualizarServicoPorId(Long id, ServicoRequest request) {
+        Servico servico = buscarEntidadePorId(id);
+        request.preencher(servico);
+        Servico servicoSalvo = servicoRepository.save(servico);
+        return ServicoResponse.fromEntity(servicoSalvo);
+    }
+
+    public void excluirServico(Long id) {
+        Servico servico = buscarEntidadePorId(id);
+        servicoRepository.delete(servico);
+    }
+
+    private Servico buscarEntidadePorId(Long id) {
+        return servicoRepository.findById(id).orElseThrow(() -> new RuntimeException("Serviço não encontrado."));
     }
 }

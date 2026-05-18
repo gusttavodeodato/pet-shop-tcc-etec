@@ -30,12 +30,12 @@ public class Tutor {
     private LocalDateTime atualizadoEm;
 
     @PrePersist
-    public void criadoEm() {
+    public void prePersist() {
         criadoEm = LocalDateTime.now();
     }
 
     @PreUpdate
-    public void atualizadoEm() {
+    public void preUpdate() {
         atualizadoEm = LocalDateTime.now();
     }
 

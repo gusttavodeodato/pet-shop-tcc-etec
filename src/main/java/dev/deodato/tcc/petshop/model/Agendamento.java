@@ -3,6 +3,7 @@ package dev.deodato.tcc.petshop.model;
 import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "tb_agendamentos")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Agendamento {
@@ -23,8 +25,12 @@ public class Agendamento {
 
     private LocalDateTime dataHora;
 
+    private String observacao;
+
     @Enumerated(EnumType.STRING)
     private StatusAgendamento status;
+
+    private LocalDateTime criadoEm;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

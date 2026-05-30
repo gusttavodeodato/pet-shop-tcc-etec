@@ -52,7 +52,7 @@ public class ServicoService {
         servicoRepository.delete(servico);
     }
 
-    private Servico buscarEntidadePorId(Long id) {
+    public Servico buscarEntidadePorId(Long id) {
         return servicoRepository.findById(id).orElseThrow(() -> new RuntimeException("Serviço não encontrado."));
     }
 }

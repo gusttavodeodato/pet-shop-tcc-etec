@@ -18,10 +18,6 @@ public class PetService {
     }
 
     public PetResponse cadastrarPet(PetRequest petRequest) {
-        if(petRequest.nome() != null) {
-            throw new RuntimeException("O nome é obrigatório");
-        }
-
         Pet pet = petRequest.toEntity();
         Pet petSalvo = petRepository.save(pet);
         return PetResponse.fromEntity(petSalvo);
@@ -48,7 +44,7 @@ public class PetService {
         petRepository.delete(pet);
     }
 
-    private Pet buscarEntidadePorId(Long id) {
+    public Pet buscarEntidadePorId(Long id) {
         return petRepository.findById(id).orElseThrow(() -> new RuntimeException("Pet não encontrado."));
     }
 }

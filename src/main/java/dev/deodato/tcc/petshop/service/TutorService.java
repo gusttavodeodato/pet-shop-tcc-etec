@@ -2,15 +2,13 @@ package dev.deodato.tcc.petshop.service;
 
 import dev.deodato.tcc.petshop.dto.tutor.TutorRequest;
 import dev.deodato.tcc.petshop.dto.tutor.TutorResponse;
+import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.model.Tutor;
 import dev.deodato.tcc.petshop.repository.TutorRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TutorService {
@@ -23,7 +21,7 @@ public class TutorService {
 
     public TutorResponse cadastrarTutor(TutorRequest tutorRequest) {
         if(tutorRequest != null && tutorRepository.existsByEmail(tutorRequest.email())) {
-            throw new RuntimeException("Já existe um Tutor cadastrado com esse email.");
+            throw new PetShopException("Já existe um Tutor cadastrado com esse email.");
         }
 
         Tutor tutor = tutorRequest.toEntity();
@@ -53,6 +51,6 @@ public class TutorService {
     }
 
     private Tutor buscarEntidadePorId(Long id) {
-        return tutorRepository.findById(id).orElseThrow(() -> new RuntimeException("Tutor não encontrado."));
+        return tutorRepository.findById(id).orElseThrow(() -> new PetShopException("Tutor não encontrado."));
     }
 }

@@ -4,6 +4,7 @@ import dev.deodato.tcc.petshop.dto.tutor.TutorRequest;
 import dev.deodato.tcc.petshop.dto.tutor.TutorResponse;
 import dev.deodato.tcc.petshop.model.Tutor;
 import dev.deodato.tcc.petshop.service.TutorService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class TutorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TutorResponse cadastrarTutor(@RequestBody TutorRequest tutorRequest) {
+    public TutorResponse cadastrarTutor(@RequestBody @Valid TutorRequest tutorRequest) {
         return tutorService.cadastrarTutor(tutorRequest);
     }
 
@@ -39,7 +40,7 @@ public class TutorController {
     }
 
     @PutMapping("/{id}")
-    public TutorResponse atualizar(@PathVariable Long id, @RequestBody TutorRequest tutorRequest) {
+    public TutorResponse atualizar(@PathVariable Long id, @RequestBody @Valid TutorRequest tutorRequest) {
         return tutorService.atualizar(id, tutorRequest);
     }
 

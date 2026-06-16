@@ -2,15 +2,13 @@ package dev.deodato.tcc.petshop.service;
 
 import dev.deodato.tcc.petshop.dto.servico.ServicoRequest;
 import dev.deodato.tcc.petshop.dto.servico.ServicoResponse;
+import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.model.Servico;
 import dev.deodato.tcc.petshop.repository.ServicoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ServicoService {
@@ -23,7 +21,7 @@ public class ServicoService {
 
     public ServicoResponse criarServico(ServicoRequest request) {
         if(request.nome() == null) {
-            throw new RuntimeException("O tipo de serviço deve não pode ser nulo");
+            throw new PetShopException("O tipo de serviço deve não pode ser nulo");
         }
 
         Servico servico = request.toEntity();
@@ -53,6 +51,6 @@ public class ServicoService {
     }
 
     public Servico buscarEntidadePorId(Long id) {
-        return servicoRepository.findById(id).orElseThrow(() -> new RuntimeException("Serviço não encontrado."));
+        return servicoRepository.findById(id).orElseThrow(() -> new PetShopException("Serviço não encontrado."));
     }
 }

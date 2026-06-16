@@ -3,6 +3,7 @@ package dev.deodato.tcc.petshop.controller;
 import dev.deodato.tcc.petshop.dto.servico.ServicoRequest;
 import dev.deodato.tcc.petshop.dto.servico.ServicoResponse;
 import dev.deodato.tcc.petshop.service.ServicoService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class ServicoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ServicoResponse criarServico(@RequestBody ServicoRequest servicoRequest) {
+    public ServicoResponse criarServico(@RequestBody @Valid ServicoRequest servicoRequest) {
         return servicoService.criarServico(servicoRequest);
     }
 
@@ -37,7 +38,7 @@ public class ServicoController {
     }
 
     @PutMapping("/{id}")
-    public ServicoResponse atualizarServicoPorId(@PathVariable Long id, @RequestBody ServicoRequest servicoRequest) {
+    public ServicoResponse atualizarServicoPorId(@PathVariable Long id, @RequestBody @Valid ServicoRequest servicoRequest) {
         return servicoService.atualizarServicoPorId(id, servicoRequest);
     }
 

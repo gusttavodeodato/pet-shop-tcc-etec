@@ -28,7 +28,7 @@ public class Agendamento {
     private String observacao;
 
     @Enumerated(EnumType.STRING)
-    private StatusAgendamento status;
+    private StatusAgendamento status = StatusAgendamento.AGENDADO;
 
     private LocalDateTime criadoEm;
 

@@ -3,6 +3,7 @@ package dev.deodato.tcc.petshop.controller;
 import dev.deodato.tcc.petshop.dto.agendamento.AgendamentoRequest;
 import dev.deodato.tcc.petshop.dto.agendamento.AgendamentoResponse;
 import dev.deodato.tcc.petshop.service.AgendamentoService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,12 +17,12 @@ public class AgendamentoController {
     }
 
     @PostMapping
-    public AgendamentoResponse criar(@RequestBody AgendamentoRequest request) {
+    public AgendamentoResponse criar(@RequestBody @Valid AgendamentoRequest request) {
         return agendamentoService.criar(request);
     }
 
     @PutMapping("{id}")
-    public AgendamentoResponse atualizar(@PathVariable Long id, @RequestBody AgendamentoRequest request) {
+    public AgendamentoResponse atualizar(@PathVariable Long id, @Valid @RequestBody AgendamentoRequest request) {
         return agendamentoService.atualizar(id, request);
     }
 

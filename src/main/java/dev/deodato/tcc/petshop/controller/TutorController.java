@@ -2,16 +2,13 @@ package dev.deodato.tcc.petshop.controller;
 
 import dev.deodato.tcc.petshop.dto.tutor.TutorRequest;
 import dev.deodato.tcc.petshop.dto.tutor.TutorResponse;
-import dev.deodato.tcc.petshop.model.Tutor;
 import dev.deodato.tcc.petshop.service.TutorService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/tutores")

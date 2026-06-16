@@ -1,5 +1,6 @@
 package dev.deodato.tcc.petshop.model;
 
+import dev.deodato.tcc.petshop.model.enums.TipoServico;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +22,9 @@ public class Servico {
 
     @Column(nullable = false)
     private String nome;
+
+    @Enumerated(EnumType.STRING)
+    private TipoServico tipoServico;
 
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;

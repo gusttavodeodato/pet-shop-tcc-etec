@@ -3,6 +3,7 @@ package dev.deodato.tcc.petshop.controller;
 import dev.deodato.tcc.petshop.dto.pet.PetRequest;
 import dev.deodato.tcc.petshop.dto.pet.PetResponse;
 import dev.deodato.tcc.petshop.service.PetService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class PetController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PetResponse cadastarPet(@RequestBody PetRequest petRequest) {
+    public PetResponse cadastarPet(@RequestBody @Valid PetRequest petRequest) {
         return petService.cadastrarPet(petRequest);
     }
 
@@ -36,7 +37,7 @@ public class PetController {
     }
 
     @PutMapping("/{id}")
-    public PetResponse atualizarPetPorId(@PathVariable Long id, @RequestBody PetRequest petRequest) {
+    public PetResponse atualizarPetPorId(@PathVariable Long id, @Valid @RequestBody PetRequest petRequest) {
         return petService.atualizarPetPorId(id, petRequest);
     }
 

@@ -24,15 +24,12 @@ public class Movimentacao {
 
     private Integer quantidade;
 
+     private Integer quantidadeMovimentacao;
+
     private LocalDateTime dataMovimentacao;
 
     @PrePersist
     public void prePersist() {
         dataMovimentacao = LocalDateTime.now();
     }
-
-    @ManyToOne
-    @JoinColumn(name = "produto_id", nullable = false)
-    private Produto produto;
-
 }

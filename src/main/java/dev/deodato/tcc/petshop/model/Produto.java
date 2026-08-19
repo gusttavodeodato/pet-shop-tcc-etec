@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_produtos")
@@ -20,11 +21,17 @@ public class Produto {
     private Long id;
 
     private String nome;
-    private String unidade;
-    private BigDecimal precoUnitario;
+    private Integer quantMax;
+    private Integer quantMinima;
+
+    private Integer saldo;
 
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
+
+    @OneToMany
+    @JoinColumn(name = "produto_id", nullable = false, unique = true)
+    private List<Movimentacao> movimentacao = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

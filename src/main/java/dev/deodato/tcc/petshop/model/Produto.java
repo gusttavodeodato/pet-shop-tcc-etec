@@ -33,6 +33,10 @@ public class Produto {
     @JoinColumn(name = "produto_id", nullable = false, unique = true)
     private List<Movimentacao> movimentacao = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "fornecedor_id", nullable = false)
+    private Fornecedor fornecedor;
+
     @PrePersist
     public void prePersist() {
         criadoEm = LocalDateTime.now();

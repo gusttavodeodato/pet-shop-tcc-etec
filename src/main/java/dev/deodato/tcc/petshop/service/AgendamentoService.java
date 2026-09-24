@@ -2,6 +2,7 @@ package dev.deodato.tcc.petshop.service;
 
 import dev.deodato.tcc.petshop.dto.agendamento.AgendamentoRequest;
 import dev.deodato.tcc.petshop.dto.agendamento.AgendamentoResponse;
+import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.mapper.AgendamentoMapper;
 import dev.deodato.tcc.petshop.model.Agendamento;
 import dev.deodato.tcc.petshop.model.Pet;
@@ -31,7 +32,7 @@ public class AgendamentoService {
         Servico servico = servicoService.buscarEntidadePorId(agendamento.servicoID());
 
         if(agendamentoRepository.existsByPetAndDataHora(pet, agendamento.dataHora())) {
-            throw new IllegalArgumentException("Já existe pet nesse horário agendado.");
+            throw new PetShopException("Já existe pet nesse horário agendado.");
         }
 
         Agendamento entity = AgendamentoMapper.toEntity(agendamento, pet, servico);
@@ -80,6 +81,6 @@ public class AgendamentoService {
 
     public Agendamento buscarEntidadePorId(Long id) {
         return agendamentoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Agendamento não encontrado."));
+                .orElseThrow(() -> new PetShopException("Agendamento não encontrado."));
     }
 }

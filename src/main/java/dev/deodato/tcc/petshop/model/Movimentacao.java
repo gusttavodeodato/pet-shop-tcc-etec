@@ -24,9 +24,11 @@ public class Movimentacao {
 
     private Integer quantidade;
 
-     private Integer quantidadeMovimentacao;
-
     private LocalDateTime dataMovimentacao;
+
+    @ManyToOne
+    @JoinColumn(name = "produto_id", nullable = false)
+    private Produto produto;
 
     @PrePersist
     public void prePersist() {

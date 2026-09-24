@@ -3,6 +3,7 @@ package dev.deodato.tcc.petshop.controller;
 import dev.deodato.tcc.petshop.dto.fornecedor.FornecedorRequest;
 import dev.deodato.tcc.petshop.dto.fornecedor.FornecedorResponse;
 import dev.deodato.tcc.petshop.service.FornecedorService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class FornecedorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FornecedorResponse cadastrar(@RequestBody FornecedorRequest fornecedorRequest) {
+    public FornecedorResponse cadastrar(@Valid @RequestBody FornecedorRequest fornecedorRequest) {
         return fornecedorService.cadastrar(fornecedorRequest);
     }
 
@@ -35,7 +36,7 @@ public class FornecedorController {
     }
 
     @PutMapping("/{id}")
-    public FornecedorResponse atualizar(@PathVariable Long id, @RequestBody FornecedorRequest fornecedorRequest) {
+    public FornecedorResponse atualizar(@PathVariable Long id, @Valid @RequestBody FornecedorRequest fornecedorRequest) {
         return fornecedorService.atualizar(id, fornecedorRequest);
     }
 

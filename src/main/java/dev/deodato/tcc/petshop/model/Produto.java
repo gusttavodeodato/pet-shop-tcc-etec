@@ -29,8 +29,7 @@ public class Produto {
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
 
-    @OneToMany
-    @JoinColumn(name = "produto_id", nullable = false, unique = true)
+    @OneToMany(mappedBy = "produto")
     private List<Movimentacao> movimentacao = new ArrayList<>();
 
     @ManyToOne

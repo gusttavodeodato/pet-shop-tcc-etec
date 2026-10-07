@@ -2,6 +2,7 @@ package dev.deodato.tcc.petshop.dto.produto;
 
 import dev.deodato.tcc.petshop.model.Produto;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record ProdutoRequest(
         @NotBlank(message = "O nome do produto é obrigatório.")
@@ -9,7 +10,10 @@ public record ProdutoRequest(
 
         Integer quantMax,
         Integer quantMinima,
-        Integer saldo
+        Integer saldo,
+
+        @NotNull(message = "O ID do fornecedor é obrigatório.")
+        Long fornecedorId
 ) {
     public Produto toEntity() {
         Produto produto = new Produto();

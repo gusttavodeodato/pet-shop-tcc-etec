@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/fornecedores")
 public class FornecedorController {
 
-    private FornecedorService fornecedorService;
+    private final FornecedorService fornecedorService;
 
     public FornecedorController(FornecedorService fornecedorService) {
         this.fornecedorService = fornecedorService;

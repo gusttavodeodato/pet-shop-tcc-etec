@@ -18,10 +18,10 @@ target/
 *.iws
 *.iml
 *.ipr
-resources/
 target/
 .mvn/
 src/main/resources/generate.requests.http
+src/main/resources/application.properties
 
 
 

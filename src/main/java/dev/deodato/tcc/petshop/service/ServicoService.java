@@ -20,9 +20,6 @@ public class ServicoService {
     }
 
     public ServicoResponse criarServico(ServicoRequest request) {
-        if(request.nome() == null) {
-            throw new PetShopException("O tipo de serviço deve não pode ser nulo");
-        }
 
         Servico servico = request.toEntity();
         Servico servicoSalvo = servicoRepository.save(servico);

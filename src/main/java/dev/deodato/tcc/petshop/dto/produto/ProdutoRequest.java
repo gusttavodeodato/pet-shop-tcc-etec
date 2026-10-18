@@ -3,6 +3,9 @@ package dev.deodato.tcc.petshop.dto.produto;
 import dev.deodato.tcc.petshop.model.Produto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
+import java.math.BigDecimal;
 
 public record ProdutoRequest(
         @NotBlank(message = "O nome do produto é obrigatório.")
@@ -11,6 +14,10 @@ public record ProdutoRequest(
         Integer quantMax,
         Integer quantMinima,
         Integer saldo,
+
+        @NotNull(message = "O preço do produto é obrigatório.")
+        @PositiveOrZero(message = "O preço não pode ser negativo.")
+        BigDecimal preco,
 
         @NotNull(message = "O ID do fornecedor é obrigatório.")
         Long fornecedorId
@@ -25,5 +32,6 @@ public record ProdutoRequest(
         produto.setQuantMax(quantMax);
         produto.setQuantMinima(quantMinima);
         produto.setSaldo(saldo);
+        produto.setPreco(preco);
     }
 }

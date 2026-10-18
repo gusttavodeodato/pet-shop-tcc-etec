@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public record ServicoResponse(
         Long id,
         String nome,
-        TipoServico tipo,
+        TipoServico tipoServico,
         LocalDateTime criadoEm,
         String descricao
 ) {

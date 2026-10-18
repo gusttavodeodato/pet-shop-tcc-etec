@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -26,8 +27,14 @@ public class Servico {
     @Enumerated(EnumType.STRING)
     private TipoServico tipoServico;
 
+    private BigDecimal preco;
+    private Integer duracaoMinutos;
+
+    private String descricao;
+
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
+
 
     @PrePersist
     public void prePersist() {
@@ -38,7 +45,5 @@ public class Servico {
     public void preUpdate() {
         atualizadoEm = LocalDateTime.now();
     }
-
-    private String descricao;
 
 }

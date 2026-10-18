@@ -13,7 +13,6 @@ public record ProdutoRequest(
 
         Integer quantMax,
         Integer quantMinima,
-        Integer saldo,
 
         @NotNull(message = "O preço do produto é obrigatório.")
         @PositiveOrZero(message = "O preço não pode ser negativo.")
@@ -31,7 +30,6 @@ public record ProdutoRequest(
         produto.setNome(nome);
         produto.setQuantMax(quantMax);
         produto.setQuantMinima(quantMinima);
-        produto.setSaldo(saldo);
         produto.setPreco(preco);
     }
 }

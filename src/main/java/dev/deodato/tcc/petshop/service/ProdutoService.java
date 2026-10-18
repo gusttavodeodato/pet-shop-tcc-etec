@@ -48,4 +48,8 @@ public class ProdutoService {
     public Produto buscarEntidadePorId(Long id) {
         return produtoRepository.findById(id).orElseThrow(() -> new PetShopException("Produto não encontrado."));
     }
+
+    public ProdutoResponse buscarPorId(Long id) {
+        return ProdutoResponse.fromEntity(buscarEntidadePorId(id));
+    }
 }

@@ -25,6 +25,11 @@ public class ProdutoController {
         return produtoService.cadastrar(produtoRequest);
     }
 
+    @GetMapping("/{id}")
+    public ProdutoResponse buscarPorId(@PathVariable Long id) {
+        return produtoService.buscarPorId(id);
+    }
+
     @GetMapping
     public Page<ProdutoResponse> listar(Pageable pageable) {
         return produtoService.listar(pageable);

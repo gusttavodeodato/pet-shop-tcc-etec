@@ -25,7 +25,7 @@ public class Produto {
     private Integer quantMax;
     private Integer quantMinima;
 
-    private Integer saldo;
+    private Integer saldo = 0;
 
     private BigDecimal preco;
 

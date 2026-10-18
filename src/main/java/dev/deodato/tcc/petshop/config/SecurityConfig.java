@@ -19,9 +19,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final SecurityFilter securityFilter;
+    private final RestSecurityErrorHandler erroHandler;
 
-    public SecurityConfig(SecurityFilter securityFilter) {
+    public SecurityConfig(SecurityFilter securityFilter,  RestSecurityErrorHandler erroHandler) {
         this.securityFilter = securityFilter;
+        this.erroHandler = erroHandler;
     }
 
     @Bean
@@ -33,8 +35,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll() // QUALQUER POST NO LOGIN ESTA PERMITINDO SEM TOKEN
+                        .requestMatchers(HttpMethod.POST, "/api/auth/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/registrar").authenticated()
                         .anyRequest().authenticated()) // PARA ACESSAR QUALQUER ROTA, PRECISA ESTAR AUTENTICADO
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(erroHandler)
+                        .accessDeniedHandler(erroHandler))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

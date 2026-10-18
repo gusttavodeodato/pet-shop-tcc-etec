@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll() // QUALQUER POST NO LOGIN ESTA PERMITINDO SEM TOKEN
-                        .requestMatchers(HttpMethod.POST, "/api/auth/registrar").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/registrar").authenticated()
                         .anyRequest().authenticated()) // PARA ACESSAR QUALQUER ROTA, PRECISA ESTAR AUTENTICADO
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -48,4 +48,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // SERVE PARA CRIPTOGRAFAR SENHAS DE USUARIOS ANTES DE COLOCA-LA NO BANCO (HASHING)
     }
+
 }

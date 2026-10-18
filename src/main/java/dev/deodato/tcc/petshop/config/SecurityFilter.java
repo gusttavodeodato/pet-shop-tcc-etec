@@ -1,5 +1,6 @@
 package dev.deodato.tcc.petshop.config;
 
+import dev.deodato.tcc.petshop.exception.PetShopException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

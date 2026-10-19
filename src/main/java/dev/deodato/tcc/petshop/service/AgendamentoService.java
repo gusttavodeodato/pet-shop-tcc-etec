@@ -9,8 +9,12 @@ import dev.deodato.tcc.petshop.model.Pet;
 import dev.deodato.tcc.petshop.model.Servico;
 import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
 import dev.deodato.tcc.petshop.repository.AgendamentoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class AgendamentoService {
@@ -77,6 +81,17 @@ public class AgendamentoService {
     public AgendamentoResponse buscarPorId(Long id) {
         Agendamento agendamento = buscarEntidadePorId(id);
         return AgendamentoMapper.toResponse(agendamento);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AgendamentoResponse> listar(StatusAgendamento status, LocalDateTime inicio, LocalDateTime fim,  Pageable pageable) {
+        LocalDateTime de = inicio != null ? inicio : LocalDateTime.of(2000, 1, 1, 0, 0);
+        LocalDateTime ate = fim != null ? fim : LocalDateTime.of(2100, 1, 1, 0, 0);
+
+        Page<Agendamento> pagina = status != null ? agendamentoRepository.findByStatusAndDataHoraBetween(status, de, ate, pageable)
+                : agendamentoRepository.findByDataHoraBetween(de, ate, pageable);
+
+        return pagina.map(AgendamentoMapper::toResponse);
     }
 
     public Agendamento buscarEntidadePorId(Long id) {

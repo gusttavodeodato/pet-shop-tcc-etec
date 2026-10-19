@@ -1,6 +1,6 @@
 package dev.deodato.tcc.petshop.model.enums;
 
-public enum Categoria {
+public enum CategoriaServico {
     ESTETICA,
     SAUDE,
     HOSPEDAGEM,

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record AgendamentoRequest(
@@ -12,6 +13,7 @@ public record AgendamentoRequest(
         @Future(message = "O agendamento deve ser no futuro")
         @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
         LocalDateTime dataHora,
+
 
         String observacao,
 

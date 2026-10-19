@@ -12,6 +12,7 @@ public class AgendamentoMapper {
     public static Agendamento toEntity(AgendamentoRequest req, Pet pet, Servico servico) {
         return Agendamento.builder()
                 .dataHora(req.dataHora())
+                .total(servico.getPreco())
                 .observacao(req.observacao())
                 .status(StatusAgendamento.AGENDADO)
                 .pet(pet)
@@ -23,6 +24,7 @@ public class AgendamentoMapper {
         return new AgendamentoResponse(
                 agendamento.getId(),
                 agendamento.getDataHora(),
+                agendamento.getTotal(),
                 agendamento.getObservacao(),
                 agendamento.getStatus(),
                 agendamento.getPet().getNome(),

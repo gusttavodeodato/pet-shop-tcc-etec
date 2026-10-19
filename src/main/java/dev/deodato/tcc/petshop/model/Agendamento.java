@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,6 +24,8 @@ public class Agendamento {
 
     private LocalDateTime dataHora;
 
+    private BigDecimal total;
+
     private String observacao;
 
     @Enumerated(EnumType.STRING)
@@ -37,5 +41,10 @@ public class Agendamento {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "servico_id", nullable = false)
     private Servico servico;
+
+    @PrePersist
+    public void prePersist() {
+        criadoEm = LocalDateTime.now();
+    }
 
 }

@@ -51,6 +51,13 @@ public class AgendamentoService {
         Pet pet = petService.buscarEntidadePorId(request.petID());
         Servico servico = servicoService.buscarEntidadePorId(request.servicoID());
 
+        boolean trocouServico = !agendamento.getServico().getId().equals(servico.getId());
+        boolean semTotal = agendamento.getTotal() != null;
+
+        if((trocouServico || semTotal) && agendamento.getStatus() != StatusAgendamento.CONCLUIDO) {
+            agendamento.setTotal(servico.getPreco());
+        }
+
         agendamento.setDataHora(request.dataHora());
         agendamento.setObservacao(request.observacao());
         agendamento.setServico(servico);

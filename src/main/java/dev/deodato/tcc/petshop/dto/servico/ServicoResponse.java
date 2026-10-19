@@ -1,7 +1,7 @@
 package dev.deodato.tcc.petshop.dto.servico;
 
 import dev.deodato.tcc.petshop.model.Servico;
-import dev.deodato.tcc.petshop.model.enums.Categoria;
+import dev.deodato.tcc.petshop.model.enums.CategoriaServico;
 import dev.deodato.tcc.petshop.model.enums.TipoServico;
 
 import java.math.BigDecimal;
@@ -11,7 +11,7 @@ public record ServicoResponse(
         Long id,
         String nome,
         TipoServico tipoServico,
-        Categoria categoria,
+        CategoriaServico categoria,
         BigDecimal preco,
         Integer duracaoMinutos,
         LocalDateTime criadoEm,

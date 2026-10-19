@@ -4,7 +4,7 @@ import dev.deodato.tcc.petshop.model.Fornecedor;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record FornecedorRequest(
+public record  FornecedorRequest(
         @NotNull(message = "O nome é obrigatório.")
         String razaoSocial,
         String nomeFantasia,

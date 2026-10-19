@@ -5,6 +5,7 @@ import dev.deodato.tcc.petshop.dto.fornecedor.FornecedorResponse;
 import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.model.Fornecedor;
 import dev.deodato.tcc.petshop.repository.FornecedorRepository;
+import dev.deodato.tcc.petshop.repository.ProdutoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,11 @@ import java.util.List;
 public class FornecedorService {
 
     private final FornecedorRepository fornecedorRepository;
+    private final ProdutoRepository produtoRepository;
 
-    public FornecedorService(FornecedorRepository fornecedorRepositoy) {
+    public FornecedorService(FornecedorRepository fornecedorRepositoy, ProdutoRepository produtoRepository) {
         this.fornecedorRepository = fornecedorRepositoy;
+        this.produtoRepository = produtoRepository;
     }
 
     public FornecedorResponse cadastrar(FornecedorRequest fornecedorRequest) {
@@ -44,6 +47,10 @@ public class FornecedorService {
 
     public void excluir(Long id) {
         Fornecedor fornecedor = buscarEntidadePorId(id);
+
+        if(produtoRepository.existsByFornecedorId(id)) {
+            throw new PetShopException("Não é possível excluir: existem produtos vinculados a este fornecedor.");
+        }
         fornecedorRepository.delete(fornecedor);
     }
 

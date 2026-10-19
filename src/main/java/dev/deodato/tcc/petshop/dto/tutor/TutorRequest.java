@@ -16,7 +16,9 @@ public record TutorRequest(
         String telefone,
 
         @Email(message = "E-mail digitado inválido.")
-        String email
+        String email,
+
+        String endereco
 ) {
     public Tutor toEntity() {
         Tutor tutor = new Tutor();
@@ -28,5 +30,6 @@ public record TutorRequest(
         tutor.setNome(nome);
         tutor.setTelefone(telefone);
         tutor.setEmail(email);
+        tutor.setEndereco(endereco);
     }
 }

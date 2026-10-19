@@ -24,6 +24,8 @@ public class Tutor {
     private String telefone;
     private String email;
 
+    private String endereco;
+
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
 

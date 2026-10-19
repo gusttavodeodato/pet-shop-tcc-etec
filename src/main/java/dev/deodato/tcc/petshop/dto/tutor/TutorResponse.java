@@ -9,6 +9,7 @@ public record TutorResponse(
         String nome,
         String telefone,
         String email,
+        String endereco,
         LocalDateTime criadoEm
 ) {
     public static TutorResponse fromEntity(Tutor tutor) {
@@ -17,6 +18,7 @@ public record TutorResponse(
                 tutor.getNome(),
                 tutor.getTelefone(),
                 tutor.getEmail(),
+                tutor.getEndereco(),
                 tutor.getCriadoEm()
         );
     }

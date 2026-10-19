@@ -94,6 +94,12 @@ public class AgendamentoService {
         return pagina.map(AgendamentoMapper::toResponse);
     }
 
+    @Transactional
+    public void excluir(Long id) {
+        Agendamento agendamento = buscarEntidadePorId(id);
+        agendamentoRepository.delete(agendamento);
+    }
+
     public Agendamento buscarEntidadePorId(Long id) {
         return agendamentoRepository.findById(id)
                 .orElseThrow(() -> new PetShopException("Agendamento não encontrado."));

@@ -1,14 +1,16 @@
 package dev.deodato.tcc.petshop.dto.fornecedor;
 
 import dev.deodato.tcc.petshop.model.Fornecedor;
+import dev.deodato.tcc.petshop.model.enums.CategoriaFornecedor;
 
 import java.time.LocalDateTime;
 
 public record FornecedorResponse(
         Long id,
         String razaoSocial,
-        String nomeFantasia,
         String cnpj,
+        String nomeFantasia,
+        CategoriaFornecedor categoria,
         String telefone,
         LocalDateTime criadoEm
 ) {
@@ -16,8 +18,9 @@ public record FornecedorResponse(
         return new FornecedorResponse(
                 fornecedor.getId(),
                 fornecedor.getRazaoSocial(),
-                fornecedor.getNomeFantasia(),
                 fornecedor.getCnpj(),
+                fornecedor.getNomeFantasia(),
+                fornecedor.getCategoria(),
                 fornecedor.getTelefone(),
                 fornecedor.getCriadoEm()
         );

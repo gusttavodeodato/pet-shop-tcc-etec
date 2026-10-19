@@ -5,5 +5,9 @@ public enum TipoServico {
     TOSA,
     BANHO_E_TOSA,
     HIDRATACAO,
-    VACINACAO
+    VACINACAO,
+    CONSULTA_VETERINARIA,
+    APLICACAO_DE_VACINAS,
+    LEVA_E_TRAZ,
+    CRECHE
 }

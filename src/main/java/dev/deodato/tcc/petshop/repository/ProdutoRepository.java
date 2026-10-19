@@ -4,4 +4,6 @@ import dev.deodato.tcc.petshop.model.Produto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
+
+    boolean existsByFornecedorId(Long id);
 }

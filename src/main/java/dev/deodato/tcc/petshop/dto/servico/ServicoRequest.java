@@ -1,6 +1,7 @@
 package dev.deodato.tcc.petshop.dto.servico;
 
 import dev.deodato.tcc.petshop.model.Servico;
+import dev.deodato.tcc.petshop.model.enums.Categoria;
 import dev.deodato.tcc.petshop.model.enums.TipoServico;
 import jakarta.validation.constraints.*;
 
@@ -12,6 +13,9 @@ public record ServicoRequest(
 
         @NotNull(message = "O tipo de serviço é obrigatório.")
         TipoServico tipoServico,
+
+        @NotNull(message = "A categoria é obrigatória.")
+        Categoria categoria,
 
         @NotNull(message = "O preço é obrigatório.")
         @PositiveOrZero(message = "O preço não pode ser negativo.")
@@ -34,6 +38,7 @@ public record ServicoRequest(
     public void preencher (Servico servico) {
         servico.setNome(nome);
         servico.setTipoServico(tipoServico);
+        servico.setCategoria(categoria);
         servico.setPreco(preco);
         servico.setDuracaoMinutos(duracaoMinutos);
         servico.setDescricao(descricao);

@@ -1,6 +1,6 @@
 package dev.deodato.tcc.petshop.model;
 
-import dev.deodato.tcc.petshop.model.enums.Categoria;
+import dev.deodato.tcc.petshop.model.enums.CategoriaServico;
 import dev.deodato.tcc.petshop.model.enums.TipoServico;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,7 +29,7 @@ public class Servico {
     private TipoServico tipoServico;
 
     @Enumerated(EnumType.STRING)
-    private Categoria categoria;
+    private CategoriaServico categoria;
 
     private BigDecimal preco;
     private Integer duracaoMinutos;

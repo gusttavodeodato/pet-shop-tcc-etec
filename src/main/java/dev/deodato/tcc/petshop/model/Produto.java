@@ -1,5 +1,6 @@
 package dev.deodato.tcc.petshop.model;
 
+import dev.deodato.tcc.petshop.model.enums.CategoriaProduto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,10 @@ public class Produto {
     private Long id;
 
     private String nome;
+
+    @Enumerated(EnumType.STRING)
+    private CategoriaProduto categoria;
+
     private Integer quantMax;
     private Integer quantMinima;
 

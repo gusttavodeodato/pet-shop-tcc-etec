@@ -1,5 +1,6 @@
 package dev.deodato.tcc.petshop.model;
 
+import dev.deodato.tcc.petshop.model.enums.CategoriaFornecedor;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,10 +20,14 @@ public class Fornecedor {
     private Long id;
 
     private String razaoSocial;
-    private String nomeFantasia;
 
     @Column(unique = true)
     private String cnpj;
+
+    private String nomeFantasia;
+
+    private CategoriaFornecedor categoria;
+
     private String telefone;
 
     private LocalDateTime criadoEm;

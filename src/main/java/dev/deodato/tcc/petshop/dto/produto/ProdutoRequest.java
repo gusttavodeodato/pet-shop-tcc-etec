@@ -1,6 +1,7 @@
 package dev.deodato.tcc.petshop.dto.produto;
 
 import dev.deodato.tcc.petshop.model.Produto;
+import dev.deodato.tcc.petshop.model.enums.CategoriaProduto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -10,6 +11,8 @@ import java.math.BigDecimal;
 public record ProdutoRequest(
         @NotBlank(message = "O nome do produto é obrigatório.")
         String nome,
+
+        CategoriaProduto categoria,
 
         Integer quantMax,
         Integer quantMinima,
@@ -28,6 +31,7 @@ public record ProdutoRequest(
     }
     public void preencher (Produto produto) {
         produto.setNome(nome);
+        produto.setCategoria(categoria);
         produto.setQuantMax(quantMax);
         produto.setQuantMinima(quantMinima);
         produto.setPreco(preco);

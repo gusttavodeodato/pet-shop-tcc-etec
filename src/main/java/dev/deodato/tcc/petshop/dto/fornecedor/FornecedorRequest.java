@@ -2,6 +2,7 @@ package dev.deodato.tcc.petshop.dto.fornecedor;
 
 import dev.deodato.tcc.petshop.model.Fornecedor;
 import dev.deodato.tcc.petshop.model.enums.CategoriaFornecedor;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -18,7 +19,10 @@ public record  FornecedorRequest(
 
 
         @Size(max = 30, message = "O telefone deve conter no máximo 30 caracteres.")
-        String telefone
+        String telefone,
+
+        @Email
+        String email
 ) {
         public Fornecedor toEntity() {
                 Fornecedor fornecedor = new Fornecedor();
@@ -32,5 +36,6 @@ public record  FornecedorRequest(
                 fornecedor.setNomeFantasia(nomeFantasia);
                 fornecedor.setCategoria(categoria);
                 fornecedor.setTelefone(telefone);
+                fornecedor.setEmail(email);
         }
 }

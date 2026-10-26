@@ -14,6 +14,7 @@ public record ProdutoResponse(
         Integer quantMinima,
         Integer saldo,
         BigDecimal preco,
+        Long fornecedorId,
         LocalDateTime criadoEm
 ) {
     public static ProdutoResponse fromEntity(Produto produto) {
@@ -25,6 +26,7 @@ public record ProdutoResponse(
                 produto.getQuantMinima(),
                 produto.getSaldo(),
                 produto.getPreco(),
+                produto.getFornecedor().getId(),
                 produto.getCriadoEm()
         );
     }

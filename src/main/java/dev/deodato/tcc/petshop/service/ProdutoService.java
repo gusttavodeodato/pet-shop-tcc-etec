@@ -39,6 +39,7 @@ public class ProdutoService {
     public ProdutoResponse atualizar(Long id, ProdutoRequest produtoRequest) {
         Produto produto = buscarEntidadePorId(id);
         produtoRequest.preencher(produto);
+        produto.setId(id);
         Produto produtoAtualizado = produtoRepository.save(produto);
         return ProdutoResponse.fromEntity(produtoAtualizado);
     }

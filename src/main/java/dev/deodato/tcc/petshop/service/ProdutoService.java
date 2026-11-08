@@ -38,7 +38,9 @@ public class ProdutoService {
 
     public ProdutoResponse atualizar(Long id, ProdutoRequest produtoRequest) {
         Produto produto = buscarEntidadePorId(id);
+        Fornecedor fornecedor = fornecedorService.buscarEntidadePorId(produtoRequest.fornecedorId());
         produtoRequest.preencher(produto);
+        produto.setFornecedor(fornecedor);
         produto.setId(id);
         Produto produtoAtualizado = produtoRepository.save(produto);
         return ProdutoResponse.fromEntity(produtoAtualizado);

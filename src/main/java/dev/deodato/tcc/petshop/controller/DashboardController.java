@@ -1,5 +1,6 @@
 package dev.deodato.tcc.petshop.controller;
 
+import dev.deodato.tcc.petshop.dto.dashboard.AgendaItem;
 import dev.deodato.tcc.petshop.dto.dashboard.RelatorioResponse;
 import dev.deodato.tcc.petshop.dto.dashboard.ResumoResponse;
 import dev.deodato.tcc.petshop.dto.meta.MetaRequest;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/dashboard")
@@ -30,6 +32,11 @@ public class DashboardController {
     @GetMapping("/resumo")
     public ResumoResponse resumo() {
         return service.resumo();
+    }
+
+    @GetMapping("/agenda-hoje")
+    public List<AgendaItem> agendaHoje() {
+        return service.agendaHoje();
     }
 
     @PutMapping("/meta")

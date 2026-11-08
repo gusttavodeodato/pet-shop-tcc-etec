@@ -1,10 +1,12 @@
 package dev.deodato.tcc.petshop.service;
 
+import dev.deodato.tcc.petshop.dto.dashboard.AgendaItem;
 import dev.deodato.tcc.petshop.dto.dashboard.RelatorioResponse;
 import dev.deodato.tcc.petshop.dto.dashboard.ResumoResponse;
 import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.model.Agendamento;
 import dev.deodato.tcc.petshop.model.MetaMensal;
+import dev.deodato.tcc.petshop.model.Tutor;
 import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
 import dev.deodato.tcc.petshop.repository.*;
 import org.springframework.stereotype.Service;
@@ -127,6 +129,28 @@ public class DashboardService {
                 .orElseGet(() -> new MetaMensal(hoje.getYear(), hoje.getMonthValue(), valor));
         meta.setValor(valor);
         metas.save(meta);
+    }
+
+    public List<AgendaItem> agendaHoje() {
+        LocalDate hoje = LocalDate.now(BRASIL);
+
+        return agendamentos
+                .findByDataHoraBetweenOrderByDataHoraAsc(hoje.atStartOfDay(), hoje.atTime(LocalTime.MAX))
+                .stream()
+                .map(a -> new AgendaItem(
+                        a.getId(),
+                        a.getDataHora().toLocalTime(),
+                        a.getPet().getNome(),
+                        nomeTutor(a),
+                        a.getServico().getNome(),
+                        a.getTotal(),
+                        a.getStatus()))
+                .toList();
+    }
+
+    private String nomeTutor(Agendamento a) {
+        List<Tutor> tutores = a.getPet().getTutores();
+        return tutores.isEmpty() ? "-" : tutores.get(0).getNome();
     }
 
     private long contar(StatusAgendamento status, LocalDateTime de, LocalDateTime ate) {

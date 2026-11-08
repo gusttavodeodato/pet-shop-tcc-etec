@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -59,9 +60,13 @@ public class DashboardService {
 
         List<RelatorioResponse.ServicoPorTipo> porTipo = concluidos.stream()
                 .filter(a -> a.getServico() != null && a.getServico().getTipoServico() != null)
-                .collect(Collectors.groupingBy(a -> a.getServico().getTipoServico(), Collectors.counting()))
+                .collect(Collectors.groupingBy(a -> a.getServico().getTipoServico()))
                         .entrySet().stream()
-                        .map(e -> new RelatorioResponse.ServicoPorTipo(e.getKey().name(), e.getValue()))
+                        .map(e -> new RelatorioResponse.ServicoPorTipo(
+                                e.getKey().name(),
+                                e.getValue().size(),
+                                somar(e.getValue())))
+                        .sorted(Comparator.comparingLong(RelatorioResponse.ServicoPorTipo::quantidade).reversed())
                         .toList();
 
         List<RelatorioResponse.ReceitaPorDia> porDia = concluidos.stream()
@@ -87,7 +92,8 @@ public class DashboardService {
         long confirmados = contar(StatusAgendamento.CONFIRMADO, inicioDia, fimDia);
         long emAndamento = contar(StatusAgendamento.EM_ANDAMENTO, inicioDia, fimDia);
         long concluidos = contar(StatusAgendamento.CONCLUIDO, inicioDia, fimDia);
-        long totalHoje = agendados + confirmados + emAndamento + concluidos;
+        long cancelados = contar(StatusAgendamento.CANCELADO, inicioDia, fimDia);
+        long totalHoje = agendados + confirmados + emAndamento + concluidos + cancelados;
 
         BigDecimal faturamentoMes = somar(agendamentos.findByStatusAndDataHoraBetween(StatusAgendamento.CONCLUIDO, inicioMes, fimMes));
 
@@ -100,7 +106,7 @@ public class DashboardService {
                         tutores.countByCriadoEmGreaterThanEqual(inicioMes)),
                 new ResumoResponse.Contagem(pets.count(),
                         pets.countByCriadoEmGreaterThanEqual(inicioMes)),
-                new ResumoResponse.Hoje(totalHoje, agendados, confirmados, emAndamento, concluidos),
+                new ResumoResponse.Hoje(totalHoje, agendados, confirmados, emAndamento, concluidos, cancelados),
                 faturamentoMes,
                 estoqueBaixo);
     }

@@ -52,11 +52,17 @@ public class AgendamentoService {
         Servico servico = servicoService.buscarEntidadePorId(request.servicoID());
 
         boolean trocouServico = !agendamento.getServico().getId().equals(servico.getId());
-        boolean semTotal = agendamento.getTotal() != null;
+        if(trocouServico) {
+            if(agendamento.getStatus() == StatusAgendamento.CONCLUIDO) {
+                throw new PetShopException("Não é possível trocar o serviço de um atendimento concluído.");
+            }
+            agendamento.setTotal(servico.getPreco());
+        }
+        /*boolean semTotal = agendamento.getTotal() != null;
 
         if((trocouServico || semTotal) && agendamento.getStatus() != StatusAgendamento.CONCLUIDO) {
             agendamento.setTotal(servico.getPreco());
-        }
+        }*/
 
         agendamento.setDataHora(request.dataHora());
         agendamento.setObservacao(request.observacao());

@@ -4,11 +4,9 @@ import dev.deodato.tcc.petshop.dto.dashboard.RelatorioResponse;
 import dev.deodato.tcc.petshop.dto.dashboard.ResumoResponse;
 import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.model.Agendamento;
+import dev.deodato.tcc.petshop.model.MetaMensal;
 import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
-import dev.deodato.tcc.petshop.repository.AgendamentoRepository;
-import dev.deodato.tcc.petshop.repository.PetRepository;
-import dev.deodato.tcc.petshop.repository.ProdutoRepository;
-import dev.deodato.tcc.petshop.repository.TutorRepository;
+import dev.deodato.tcc.petshop.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,12 +32,14 @@ public class DashboardService {
     private final TutorRepository tutores;
     private final PetRepository pets;
     private final ProdutoRepository produtos;
+    private final MetaMensalRepository metas;
 
-    public DashboardService(AgendamentoRepository agendamentos, TutorRepository tutores, PetRepository pets, ProdutoRepository produtos) {
+    public DashboardService(AgendamentoRepository agendamentos, TutorRepository tutores, PetRepository pets, ProdutoRepository produtos, MetaMensalRepository metas) {
         this.agendamentos = agendamentos;
         this.tutores = tutores;
         this.pets = pets;
         this.produtos = produtos;
+        this.metas = metas;
     }
 
     public RelatorioResponse relatorio(LocalDate inicio, LocalDate fim) {
@@ -97,6 +97,14 @@ public class DashboardService {
 
         BigDecimal faturamentoMes = somar(agendamentos.findByStatusAndDataHoraBetween(StatusAgendamento.CONCLUIDO, inicioMes, fimMes));
 
+        BigDecimal valorMeta = metas.findByAnoAndMes(hoje.getYear(), hoje.getMonthValue())
+                .map(MetaMensal::getValor)
+                .orElse(BigDecimal.ZERO);
+
+        BigDecimal projecao = faturamentoMes
+                .multiply(BigDecimal.valueOf(hoje.lengthOfMonth()))
+                .divide(BigDecimal.valueOf(hoje.getDayOfMonth()), 2, RoundingMode.HALF_UP);
+
         List<ResumoResponse.EstoqueBaixo> estoqueBaixo = produtos.findEstoqueBaixo().stream()
                 .map(p -> new ResumoResponse.EstoqueBaixo(p.getNome(), p.getSaldo()))
                 .toList();
@@ -108,7 +116,17 @@ public class DashboardService {
                         pets.countByCriadoEmGreaterThanEqual(inicioMes)),
                 new ResumoResponse.Hoje(totalHoje, agendados, confirmados, emAndamento, concluidos, cancelados),
                 faturamentoMes,
+                new ResumoResponse.Meta(valorMeta, projecao),
                 estoqueBaixo);
+    }
+
+    @Transactional
+    public void definirMeta(BigDecimal valor) {
+        LocalDate hoje = LocalDate.now(BRASIL);
+        MetaMensal meta = metas.findByAnoAndMes(hoje.getYear(), hoje.getMonthValue())
+                .orElseGet(() -> new MetaMensal(hoje.getYear(), hoje.getMonthValue(), valor));
+        meta.setValor(valor);
+        metas.save(meta);
     }
 
     private long contar(StatusAgendamento status, LocalDateTime de, LocalDateTime ate) {

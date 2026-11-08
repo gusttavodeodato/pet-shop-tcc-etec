@@ -12,7 +12,7 @@ public record ResumoResponse(
 ) {
     public record Contagem(Long total, Long novoMes) {}
 
-    public record Hoje(Long total, Long agendados, Long confirmados, Long emAndamento, Long concluidos) {}
+    public record Hoje(long total, long agendados, long confirmados, long emAndamento, long concluidos, long cancelados) {}
 
     public record EstoqueBaixo(String produto, int saldo) {}
 }

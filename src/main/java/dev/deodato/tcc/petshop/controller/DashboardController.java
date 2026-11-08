@@ -2,12 +2,12 @@ package dev.deodato.tcc.petshop.controller;
 
 import dev.deodato.tcc.petshop.dto.dashboard.RelatorioResponse;
 import dev.deodato.tcc.petshop.dto.dashboard.ResumoResponse;
+import dev.deodato.tcc.petshop.dto.meta.MetaRequest;
 import dev.deodato.tcc.petshop.service.DashboardService;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
@@ -27,9 +27,14 @@ public class DashboardController {
         return service.relatorio(inicio, fim);
     }
 
-
     @GetMapping("/resumo")
     public ResumoResponse resumo() {
         return service.resumo();
+    }
+
+    @PutMapping("/meta")
+    public ResponseEntity<Void> definirMeta(@Valid @RequestBody MetaRequest request) {
+        service.definirMeta(request.valor());
+        return ResponseEntity.noContent().build();
     }
 }

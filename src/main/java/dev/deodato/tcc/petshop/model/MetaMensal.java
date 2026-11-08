@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name =  "tb_metas",
         uniqueConstraints = @UniqueConstraint(columnNames = {"ano", "mes"}))
 public class MetaMensal {
@@ -25,6 +24,12 @@ public class MetaMensal {
     @Column(nullable = false)
     private int mes;
 
-    @Column(nullable = false, precision = 12, scale = 12)
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal valor;
+
+    public MetaMensal(int ano, int mes, BigDecimal valor) {
+        this.ano = ano;
+        this.mes = mes;
+        this.valor = valor;
+    }
 }

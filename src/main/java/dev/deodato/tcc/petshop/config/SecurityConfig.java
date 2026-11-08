@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll() // QUALQUER POST NO LOGIN ESTA PERMITINDO SEM TOKEN
-                        .requestMatchers(HttpMethod.POST, "/api/auth/health").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/registrar").permitAll()
                         .anyRequest().authenticated()) // PARA ACESSAR QUALQUER ROTA, PRECISA ESTAR AUTENTICADO
                 .exceptionHandling(ex -> ex

@@ -25,6 +25,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     long countByStatusAndDataHoraBetween(StatusAgendamento status, LocalDateTime inicio, LocalDateTime fim);
 
+    boolean existsByPetAndDataHoraAndIdNot(Pet pet, LocalDateTime dataHora, Long id);
     boolean existsByServicoId(Long id);
     boolean existsByPetId(Long petId);
 }

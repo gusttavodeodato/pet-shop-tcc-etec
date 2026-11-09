@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class DashboardService {
-    private static final ZoneId BRASIL = ZoneId.of("America/Sao_Paulo");
+    static final ZoneId BRASIL = ZoneId.of("America/Sao_Paulo");
 
     private final AgendamentoRepository agendamentos;
     private final TutorRepository tutores;

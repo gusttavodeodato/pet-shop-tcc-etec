@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import static dev.deodato.tcc.petshop.service.DashboardService.BRASIL;
+
 @Service
 public class AgendamentoService {
 
@@ -31,6 +33,9 @@ public class AgendamentoService {
 
     @Transactional
     public AgendamentoResponse criar(AgendamentoRequest agendamento) {
+        if(agendamento.dataHora().isBefore(LocalDateTime.now(BRASIL))) {
+            throw new PetShopException("Não é possível agendar no passado.");
+        }
 
         Pet pet = petService.buscarEntidadePorId(agendamento.petID());
         Servico servico = servicoService.buscarEntidadePorId(agendamento.servicoID());
@@ -47,22 +52,23 @@ public class AgendamentoService {
     @Transactional
     public AgendamentoResponse atualizar(Long id,  AgendamentoRequest request) {
         Agendamento agendamento = buscarEntidadePorId(id);
+        validarEmAberto(agendamento);
 
         Pet pet = petService.buscarEntidadePorId(request.petID());
         Servico servico = servicoService.buscarEntidadePorId(request.servicoID());
 
-        boolean trocouServico = !agendamento.getServico().getId().equals(servico.getId());
-        if(trocouServico) {
-            if(agendamento.getStatus() == StatusAgendamento.CONCLUIDO) {
-                throw new PetShopException("Não é possível trocar o serviço de um atendimento concluído.");
-            }
+        boolean mudouHorario = !request.dataHora().equals(agendamento.getDataHora());
+        if(mudouHorario && request.dataHora().isBefore(LocalDateTime.now(BRASIL))) {
+            throw new PetShopException("Não é possível agendar no passado.");
+        }
+
+        if(agendamentoRepository.existsByPetAndDataHoraAndIdNot(pet, request.dataHora(), id)) {
+            throw new PetShopException("Já existe pet nesse horário agendado.");
+        }
+
+        if(!agendamento.getServico().getId().equals(servico.getId())) {
             agendamento.setTotal(servico.getPreco());
         }
-        /*boolean semTotal = agendamento.getTotal() != null;
-
-        if((trocouServico || semTotal) && agendamento.getStatus() != StatusAgendamento.CONCLUIDO) {
-            agendamento.setTotal(servico.getPreco());
-        }*/
 
         agendamento.setDataHora(request.dataHora());
         agendamento.setObservacao(request.observacao());
@@ -77,6 +83,7 @@ public class AgendamentoService {
     @Transactional
     public AgendamentoResponse cancelar(Long id) {
         Agendamento agendamento = buscarEntidadePorId(id);
+        validarEmAberto(agendamento);
         agendamento.setStatus(StatusAgendamento.CANCELADO);
         agendamentoRepository.save(agendamento);
         return AgendamentoMapper.toResponse(agendamento);
@@ -85,14 +92,9 @@ public class AgendamentoService {
     @Transactional
     public AgendamentoResponse concluido(Long id) {
         Agendamento agendamento = buscarEntidadePorId(id);
+        validarEmAberto(agendamento);
         agendamento.setStatus(StatusAgendamento.CONCLUIDO);
         agendamentoRepository.save(agendamento);
-        return AgendamentoMapper.toResponse(agendamento);
-    }
-
-    @Transactional(readOnly = true)
-    public AgendamentoResponse buscarPorId(Long id) {
-        Agendamento agendamento = buscarEntidadePorId(id);
         return AgendamentoMapper.toResponse(agendamento);
     }
 
@@ -111,6 +113,34 @@ public class AgendamentoService {
     public void excluir(Long id) {
         Agendamento agendamento = buscarEntidadePorId(id);
         agendamentoRepository.delete(agendamento);
+    }
+
+    @Transactional
+    public AgendamentoResponse reabrir(Long id) {
+        Agendamento agendamento = buscarEntidadePorId(id);
+
+        if(agendamento.getStatus() != StatusAgendamento.CONCLUIDO) {
+            throw new PetShopException("Só é possível reabrir um atendimento concluído.");
+        }
+
+        agendamento.setStatus(StatusAgendamento.AGENDADO);
+        agendamentoRepository.save(agendamento);
+        return AgendamentoMapper.toResponse(agendamento);
+    }
+
+    public void validarEmAberto(Agendamento agendamento) {
+        if(agendamento.getStatus() == StatusAgendamento.CONCLUIDO) {
+            throw new PetShopException("Este atendimento já foi concluído.");
+        }
+        if(agendamento.getStatus() == StatusAgendamento.CANCELADO) {
+            throw new PetShopException("Este atendimento já foi cancelado.");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public AgendamentoResponse buscarPorId(Long id) {
+        Agendamento agendamento = buscarEntidadePorId(id);
+        return AgendamentoMapper.toResponse(agendamento);
     }
 
     public Agendamento buscarEntidadePorId(Long id) {

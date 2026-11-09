@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 public record AgendamentoRequest(
         @NotNull(message = "A data e o horário são obrigatórios.")
-        @Future(message = "O agendamento deve ser no futuro")
         @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
         LocalDateTime dataHora,
 

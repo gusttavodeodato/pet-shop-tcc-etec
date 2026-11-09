@@ -43,6 +43,12 @@ public class AgendamentoController {
         return agendamentoService.concluido(id);
     }
 
+    @PutMapping("/{id}/reabrir")
+    public AgendamentoResponse reabrir(@PathVariable Long id) {
+        return agendamentoService.reabrir(id);
+    }
+
+
 
     // FILTRANDO POR STATUS
     @GetMapping

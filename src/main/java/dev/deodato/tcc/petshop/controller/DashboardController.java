@@ -39,6 +39,13 @@ public class DashboardController {
         return service.agendaHoje();
     }
 
+    @GetMapping("/proximo-atendimento")
+    public ResponseEntity<AgendaItem> proximoAtendimento() {
+        return service.proximoAtendimento()
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
     @PutMapping("/meta")
     public ResponseEntity<Void> definirMeta(@Valid @RequestBody MetaRequest request) {
         service.definirMeta(request.valor());

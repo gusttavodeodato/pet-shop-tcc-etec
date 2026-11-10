@@ -19,10 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -137,15 +134,31 @@ public class DashboardService {
         return agendamentos
                 .findByDataHoraBetweenOrderByDataHoraAsc(hoje.atStartOfDay(), hoje.atTime(LocalTime.MAX))
                 .stream()
-                .map(a -> new AgendaItem(
-                        a.getId(),
-                        a.getDataHora().toLocalTime(),
-                        a.getPet().getNome(),
-                        nomeTutor(a),
-                        a.getServico().getNome(),
-                        a.getTotal(),
-                        a.getStatus()))
+                .map(this::paraAgendaItem)
                 .toList();
+    }
+
+    public Optional<AgendaItem> proximoAtendimento() {
+        LocalDateTime agora = LocalDateTime.now(BRASIL);
+        LocalDateTime fimDia = agora.toLocalDate().atTime(LocalTime.MAX);
+
+        return agendamentos
+                .findFirstByStatusInAndDataHoraBetweenOrderByDataHoraAsc(
+                        List.of(StatusAgendamento.AGENDADO, StatusAgendamento.CONFIRMADO),
+                        agora, fimDia)
+                .map(this::paraAgendaItem);
+    }
+
+    private AgendaItem paraAgendaItem(Agendamento a) {
+        return new AgendaItem(
+                a.getId(),
+                a.getDataHora().toLocalTime(),
+                a.getPet().getNome(),
+                nomeTutor(a),
+                a.getServico().getNome(),
+                a.getTotal(),
+                a.getStatus()
+        );
     }
 
     private String nomeTutor(Agendamento a) {

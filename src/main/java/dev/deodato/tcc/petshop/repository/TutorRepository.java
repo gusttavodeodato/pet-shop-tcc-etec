@@ -11,4 +11,6 @@ public interface TutorRepository extends JpaRepository<Tutor, Long> {
     boolean existsByEmail(String email);
 
     long countByCriadoEmGreaterThanEqual(LocalDateTime desde);
+
+    long countByCriadoEmBetween(LocalDateTime inicio, LocalDateTime fim);
 }

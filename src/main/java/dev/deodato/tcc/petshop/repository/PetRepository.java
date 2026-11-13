@@ -10,4 +10,5 @@ import java.time.LocalDateTime;
 public interface PetRepository extends JpaRepository<Pet, Long> {
     boolean existsByTutoresId(Long tutorId);
     long countByCriadoEmGreaterThanEqual(LocalDateTime desde);
+    long countByCriadoEmBetween(LocalDateTime inicio, LocalDateTime fim);
 }

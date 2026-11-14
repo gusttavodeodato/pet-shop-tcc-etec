@@ -30,6 +30,10 @@ public class Movimentacao {
     @JoinColumn(name = "produto_id", nullable = false)
     private Produto produto;
 
+    @ManyToOne
+    @JoinColumn(name = "venda_id")
+    private Venda venda;
+
     @PrePersist
     public void prePersist() {
         dataMovimentacao = LocalDateTime.now();

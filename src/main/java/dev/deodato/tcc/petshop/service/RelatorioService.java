@@ -1,30 +1,24 @@
 package dev.deodato.tcc.petshop.service;
 
-import dev.deodato.tcc.petshop.dto.relatorio.AgendamentosResponse;
-import dev.deodato.tcc.petshop.dto.relatorio.ClientesPetsResponse;
-import dev.deodato.tcc.petshop.dto.relatorio.ServicoPopular;
+import dev.deodato.tcc.petshop.dto.relatorio.*;
 import dev.deodato.tcc.petshop.model.Agendamento;
 import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
 import dev.deodato.tcc.petshop.repository.AgendamentoRepository;
 import dev.deodato.tcc.petshop.repository.PetRepository;
 import dev.deodato.tcc.petshop.repository.TutorRepository;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.YearMonth;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.time.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class RelatorioService {
 
+    private static final ZoneId BRASIL = ZoneId.of("America/Sao_Paulo");
     private final AgendamentoRepository agendamentos;
     private final TutorRepository tutores;
     private final PetRepository pets;
@@ -74,6 +68,48 @@ public class RelatorioService {
                     .thenComparing(ServicoPopular::receita, Comparator.reverseOrder()))
                 .limit(limite)
                 .toList();
+    }
+
+    public ReceitaAcumuladaResponse receitaAcumulada(YearMonth mes) {
+        LocalDate hoje = LocalDate.now(BRASIL);
+        YearMonth atual = YearMonth.from(hoje);
+        YearMonth anterior = mes.minusMonths(1);
+
+        int ultimoDia;
+        if(mes.isAfter(atual)) {
+            ultimoDia = 0;
+        } else if(mes.equals(atual)) {
+            ultimoDia = hoje.getDayOfMonth();
+        } else {
+            ultimoDia = mes.lengthOfMonth();
+        }
+
+        return new ReceitaAcumuladaResponse(
+                serie(mes, ultimoDia),
+                serie(anterior, anterior.lengthOfMonth())
+        );
+    }
+
+    private List<ReceitaAcumuladaResponse.Ponto> serie(YearMonth mes, int ultimoDia) {
+        List<Agendamento> concluidos = agendamentos.findByStatusAndDataHoraBetween(
+                StatusAgendamento.CONCLUIDO, inicio(mes), fim(mes)
+        );
+
+        Map<Integer, BigDecimal> receitaPorDia = new HashMap<>();
+        for(Agendamento a : concluidos) {
+            BigDecimal valor = a.getTotal() != null ? a.getTotal() : BigDecimal.ZERO;
+            receitaPorDia.merge(a.getDataHora().getDayOfMonth(), valor, BigDecimal::add);
+        }
+
+        List<ReceitaAcumuladaResponse.Ponto> pontos = new ArrayList<>();
+        BigDecimal acumulado = BigDecimal.ZERO;
+
+        for(int dia = 1; dia <= ultimoDia; dia++) {
+            acumulado = acumulado.add(receitaPorDia.getOrDefault(dia, BigDecimal.ZERO));
+            pontos.add(new ReceitaAcumuladaResponse.Ponto(dia, acumulado));
+        }
+
+        return pontos;
     }
 
     private LocalDateTime inicio(YearMonth mes) {

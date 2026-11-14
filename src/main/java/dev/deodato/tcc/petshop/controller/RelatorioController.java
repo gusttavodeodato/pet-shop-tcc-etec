@@ -2,6 +2,7 @@ package dev.deodato.tcc.petshop.controller;
 
 import dev.deodato.tcc.petshop.dto.relatorio.AgendamentosResponse;
 import dev.deodato.tcc.petshop.dto.relatorio.ClientesPetsResponse;
+import dev.deodato.tcc.petshop.dto.relatorio.ReceitaAcumuladaResponse;
 import dev.deodato.tcc.petshop.dto.relatorio.ServicoPopular;
 import dev.deodato.tcc.petshop.service.RelatorioService;
 import jakarta.validation.constraints.Max;
@@ -44,5 +45,11 @@ public class RelatorioController {
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth mes,
             @RequestParam(defaultValue = "5") @Min(1) @Max(20) int limite) {
         return service.servicosPopulares(mes, limite);
+    }
+
+    @GetMapping("/receita-acumulada")
+    public ReceitaAcumuladaResponse receitaAcumulada(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth mes) {
+        return service.receitaAcumulada(mes);
     }
 }

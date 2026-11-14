@@ -12,4 +12,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     @Query("select p from Produto p where p.saldo <= p.quantMinima")
     List<Produto> findEstoqueBaixo();
+
+    List<Produto> findByRevendaTrueOrderByNomeAsc();
 }

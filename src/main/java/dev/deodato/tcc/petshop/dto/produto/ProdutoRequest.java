@@ -4,6 +4,7 @@ import dev.deodato.tcc.petshop.model.Produto;
 import dev.deodato.tcc.petshop.model.enums.CategoriaProduto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
@@ -22,7 +23,12 @@ public record ProdutoRequest(
         BigDecimal preco,
 
         @NotNull(message = "O ID do fornecedor é obrigatório.")
-        Long fornecedorId
+        Long fornecedorId,
+
+        Boolean revenda,
+
+        @PositiveOrZero(message = "O custo não pode ser negativo.")
+        BigDecimal precoCusto
 ) {
     public Produto toEntity() {
         Produto produto = new Produto();
@@ -35,5 +41,13 @@ public record ProdutoRequest(
         produto.setQuantMax(quantMax);
         produto.setQuantMinima(quantMinima);
         produto.setPreco(preco);
+
+        if(revenda != null) {
+            produto.setRevenda(revenda);
+        }
+
+        if(precoCusto != null) {
+            produto.setPrecoCusto(precoCusto);
+        }
     }
 }

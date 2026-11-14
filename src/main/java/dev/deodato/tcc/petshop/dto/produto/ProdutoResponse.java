@@ -15,6 +15,8 @@ public record ProdutoResponse(
         Integer saldo,
         BigDecimal preco,
         Long fornecedorId,
+        boolean revenda,
+        BigDecimal precoCusto,
         LocalDateTime criadoEm
 ) {
     public static ProdutoResponse fromEntity(Produto produto) {
@@ -27,6 +29,8 @@ public record ProdutoResponse(
                 produto.getSaldo(),
                 produto.getPreco(),
                 produto.getFornecedor().getId(),
+                produto.isRevenda(),
+                produto.getPrecoCusto(),
                 produto.getCriadoEm()
         );
     }

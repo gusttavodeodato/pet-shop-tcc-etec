@@ -34,6 +34,11 @@ public class Produto {
 
     private BigDecimal preco;
 
+    private boolean revenda;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal precoCusto;
+
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
 

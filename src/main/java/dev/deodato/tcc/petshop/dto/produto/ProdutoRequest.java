@@ -33,6 +33,10 @@ public record ProdutoRequest(
     public Produto toEntity() {
         Produto produto = new Produto();
         preencher(produto);
+
+        if(revenda == null) {
+            produto.setRevenda(true);
+        }
         return produto;
     }
     public void preencher (Produto produto) {

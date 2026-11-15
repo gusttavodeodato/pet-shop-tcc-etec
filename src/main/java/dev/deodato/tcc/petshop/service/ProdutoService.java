@@ -28,6 +28,7 @@ public class ProdutoService {
         Produto produto = produtoRequest.toEntity();
         Fornecedor fornecedor = fornecedorService.buscarEntidadePorId(produtoRequest.fornecedorId());
         produto.setFornecedor(fornecedor);
+        validarPrecos(produto);
         Produto produtoSalvo = produtoRepository.save(produto);
         return ProdutoResponse.fromEntity(produtoSalvo);
     }
@@ -42,6 +43,7 @@ public class ProdutoService {
         produtoRequest.preencher(produto);
         produto.setFornecedor(fornecedor);
         produto.setId(id);
+        validarPrecos(produto);
         Produto produtoAtualizado = produtoRepository.save(produto);
         return ProdutoResponse.fromEntity(produtoAtualizado);
     }
@@ -57,6 +59,16 @@ public class ProdutoService {
 
     public Produto buscarEntidadePorId(Long id) {
         return produtoRepository.findById(id).orElseThrow(() -> new PetShopException("Produto não encontrado."));
+    }
+
+    private void validarPrecos(Produto produto) {
+        if(produto.isRevenda() && produto.getPrecoCusto() == null) {
+            throw new PetShopException("Informe o custo do produto de revenda.");
+        }
+
+        if(produto.getPrecoCusto() != null && produto.getPreco().compareTo(produto.getPrecoCusto()) < 0) {
+            throw new PetShopException("O preço  de venda não pode ser menor que o custo.");
+        }
     }
 
     public ProdutoResponse buscarPorId(Long id) {

@@ -3,6 +3,7 @@ package dev.deodato.tcc.petshop.controller;
 import dev.deodato.tcc.petshop.dto.venda.ProdutoVendaResponse;
 import dev.deodato.tcc.petshop.dto.venda.VendaRequest;
 import dev.deodato.tcc.petshop.dto.venda.VendaResponse;
+import dev.deodato.tcc.petshop.dto.venda.VendasHojeResponse;
 import dev.deodato.tcc.petshop.model.enums.CategoriaProduto;
 import dev.deodato.tcc.petshop.service.VendaService;
 import jakarta.validation.Valid;
@@ -26,6 +27,11 @@ public class VendaController {
             @RequestParam(required = false)CategoriaProduto categoria,
             @RequestParam(required = false) String busca) {
         return service.listarProdutos(categoria, busca);
+    }
+
+    @GetMapping("/hoje")
+    public VendasHojeResponse hoje() {
+        return service.vendasHoje();
     }
 
     @PostMapping

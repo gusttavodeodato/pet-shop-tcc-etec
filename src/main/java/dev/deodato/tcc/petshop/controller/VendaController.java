@@ -1,12 +1,13 @@
 package dev.deodato.tcc.petshop.controller;
 
 import dev.deodato.tcc.petshop.dto.venda.ProdutoVendaResponse;
+import dev.deodato.tcc.petshop.dto.venda.VendaRequest;
+import dev.deodato.tcc.petshop.dto.venda.VendaResponse;
 import dev.deodato.tcc.petshop.model.enums.CategoriaProduto;
 import dev.deodato.tcc.petshop.service.VendaService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +26,11 @@ public class VendaController {
             @RequestParam(required = false)CategoriaProduto categoria,
             @RequestParam(required = false) String busca) {
         return service.listarProdutos(categoria, busca);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public VendaResponse registrar(@RequestBody @Valid VendaRequest request) {
+        return service.registrar(request);
     }
 }

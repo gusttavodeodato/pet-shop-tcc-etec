@@ -4,6 +4,7 @@ import dev.deodato.tcc.petshop.dto.produto.ProdutoResponse;
 import dev.deodato.tcc.petshop.dto.venda.ProdutoVendaResponse;
 import dev.deodato.tcc.petshop.dto.venda.VendaRequest;
 import dev.deodato.tcc.petshop.dto.venda.VendaResponse;
+import dev.deodato.tcc.petshop.dto.venda.VendasHojeResponse;
 import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.model.*;
 import dev.deodato.tcc.petshop.model.enums.CategoriaProduto;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -115,6 +118,32 @@ public class VendaService {
         return VendaResponse.fromEntity(venda);
     }
 
+    public VendasHojeResponse vendasHoje() {
+        LocalDate hoje = LocalDate.now(BRASIL);
+
+        List<Venda> doDia = vendas.findByDataHoraBetweenOrderByDataHoraDesc(hoje.atStartOfDay(), hoje.atTime(LocalTime.MAX));
+
+        BigDecimal total = doDia.stream()
+                .map(Venda::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        List<VendasHojeResponse.VendaResumo> lista = doDia.stream()
+                .map(this::paraResumo)
+                .toList();
+
+        return new VendasHojeResponse(doDia.size(), total, lista);
+    }
+
+    private VendasHojeResponse.VendaResumo paraResumo(Venda v) {
+        List<VendasHojeResponse.ItemResumo> itens = v.getItens().stream()
+                .map((ItemVenda i) -> new VendasHojeResponse.ItemResumo(i.getProduto().getNome(), i.getQuantidade()))
+                .toList();
+
+        String cliente = v.getTutor() != null ? v.getTutor().getNome() : "Balcão";
+
+        return new VendasHojeResponse.VendaResumo(v.getId(), v.getDataHora().toLocalTime(), cliente, v.getFormaPagamento(), v.getTotal(), itens);
+    }
+
     private ProdutoVendaResponse paraResponse(Produto p) {
         int saldo = p.getSaldo() == null ? 0 : p.getSaldo();
         Integer minimo = p.getQuantMinima();
@@ -131,4 +160,6 @@ public class VendaService {
 
         return new ProdutoVendaResponse(p.getId(), p.getNome(), p.getPreco(), p.getCategoria(), saldo, situacao);
     }
+
+
 }

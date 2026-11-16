@@ -32,6 +32,8 @@ public class Fornecedor {
     @Email
     private String email;
 
+    private String endereco;
+
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
 

@@ -13,6 +13,7 @@ public record FornecedorResponse(
         CategoriaFornecedor categoria,
         String telefone,
         String email,
+        String endereco,
         LocalDateTime criadoEm
 ) {
     public static FornecedorResponse fromEntity(Fornecedor fornecedor) {
@@ -24,6 +25,7 @@ public record FornecedorResponse(
                 fornecedor.getCategoria(),
                 fornecedor.getTelefone(),
                 fornecedor.getEmail(),
+                fornecedor.getEndereco(),
                 fornecedor.getCriadoEm()
         );
     }

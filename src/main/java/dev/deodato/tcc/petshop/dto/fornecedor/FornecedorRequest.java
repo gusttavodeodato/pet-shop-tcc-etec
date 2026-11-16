@@ -22,7 +22,9 @@ public record  FornecedorRequest(
         String telefone,
 
         @Email
-        String email
+        String email,
+
+        String endereco
 ) {
         public Fornecedor toEntity() {
                 Fornecedor fornecedor = new Fornecedor();
@@ -37,5 +39,6 @@ public record  FornecedorRequest(
                 fornecedor.setCategoria(categoria);
                 fornecedor.setTelefone(telefone);
                 fornecedor.setEmail(email);
+                fornecedor.setEndereco(endereco);
         }
 }

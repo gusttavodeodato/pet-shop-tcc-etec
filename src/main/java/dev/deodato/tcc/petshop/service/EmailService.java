@@ -24,7 +24,7 @@ public class EmailService {
     public void enviarRecuperacaoSenha(String destino, String link) {
         try{
             SimpleMailMessage mensagem = new SimpleMailMessage();
-            mensagem.setFrom(remetente);
+            mensagem.setFrom("PetShop < " +remetente + ">");
             mensagem.setTo(destino);
             mensagem.setSubject("Recuperação de senha - Petshop");
             mensagem.setText("Olá!\n\n"

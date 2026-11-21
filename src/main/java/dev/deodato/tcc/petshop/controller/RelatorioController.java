@@ -1,13 +1,14 @@
 package dev.deodato.tcc.petshop.controller;
 
-import dev.deodato.tcc.petshop.dto.relatorio.AgendamentosResponse;
-import dev.deodato.tcc.petshop.dto.relatorio.ClientesPetsResponse;
-import dev.deodato.tcc.petshop.dto.relatorio.ReceitaAcumuladaResponse;
-import dev.deodato.tcc.petshop.dto.relatorio.ServicoPopular;
+import dev.deodato.tcc.petshop.dto.relatorio.*;
+import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
 import dev.deodato.tcc.petshop.service.RelatorioService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,5 +52,28 @@ public class RelatorioController {
     public ReceitaAcumuladaResponse receitaAcumulada(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth mes) {
         return service.receitaAcumulada(mes);
+    }
+
+    @GetMapping("/historico")
+    public HistoricoResponse historico(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth mes,
+            @RequestParam(required = false)StatusAgendamento status,
+            @RequestParam(required = false) String busca,
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "20") int tamanho) {
+        return service.historico(mes, status, busca, pagina, tamanho);
+    }
+
+    @GetMapping("/historico/pdf")
+    public ResponseEntity<byte[]> historicoPdf(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth mes,
+            @RequestParam(required = false) StatusAgendamento status,
+            @RequestParam(required = false) String busca) {
+        byte[] conteudo = service.exportarPdf(mes, status, busca);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"historico-" + mes + ".pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(conteudo);
     }
 }

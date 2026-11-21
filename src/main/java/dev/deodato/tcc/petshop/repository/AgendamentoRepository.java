@@ -5,6 +5,7 @@ import dev.deodato.tcc.petshop.model.Pet;
 import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,11 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     List<Agendamento> findByDataHoraBetweenOrderByDataHoraAsc(LocalDateTime inicio, LocalDateTime fim);
 
     Optional<Agendamento> findFirstByStatusInAndDataHoraBetweenOrderByDataHoraAsc(
+            Collection<StatusAgendamento> status, LocalDateTime inicio, LocalDateTime fim
+    );
+
+    @EntityGraph(attributePaths = {"pet", "pet.tutores", "servico"})
+    List<Agendamento> findByStatusInAndDataHoraBetweenOrderByDataHoraAsc(
             Collection<StatusAgendamento> status, LocalDateTime inicio, LocalDateTime fim
     );
 

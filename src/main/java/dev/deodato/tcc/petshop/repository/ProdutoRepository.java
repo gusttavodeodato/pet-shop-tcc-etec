@@ -22,5 +22,9 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     @Query("select p from Produto p where p.id in :ids order by p.id")
     List<Produto> buscarParaVenda(@Param("ids")Collection<Long> ids);
 
+    // SOMA DE ESTOQUE EM PERFIL
+    @Query("select coalesce(sum(p.saldo), 0L) from Produto p")
+    Long somarSaldos();
+
     List<Produto> findByRevendaTrueOrderByNomeAsc();
 }

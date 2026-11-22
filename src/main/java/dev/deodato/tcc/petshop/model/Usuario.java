@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,7 +26,26 @@ public class Usuario implements UserDetails {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @ToString.Exclude
     private String senha;
+
+    @Column(length = 120)
+    private String nome;
+
+    @Column(length = 20)
+    private String telefone;
+
+    @Column(length = 255)
+    private String endereco;
+
+    @ColumnDefault("true")
+    @Column(nullable = false)
+    private boolean notificacoesEmail = true;
+
+    @ColumnDefault("false")
+    @Column(nullable = false)
+    private boolean modoEscuro = false;
 
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
@@ -54,7 +75,7 @@ public class Usuario implements UserDetails {
         return this.email;
     }
 
-    @Override
+   /* @Override
     public boolean isAccountNonExpired() {
         return UserDetails.super.isAccountNonExpired();
     }
@@ -72,5 +93,5 @@ public class Usuario implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
-    }
+    }*/
 }

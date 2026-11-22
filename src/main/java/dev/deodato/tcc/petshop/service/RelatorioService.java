@@ -18,6 +18,7 @@ import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
 import dev.deodato.tcc.petshop.repository.AgendamentoRepository;
 import dev.deodato.tcc.petshop.repository.PetRepository;
 import dev.deodato.tcc.petshop.repository.TutorRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class RelatorioService {
@@ -187,15 +189,18 @@ public class RelatorioService {
             if(lista.isEmpty()) {
                 documento.add(new Paragraph("Nenhum atendimento encontrado.", normal));
             } else {
-                PdfPTable tabela = new PdfPTable(new float[]{2,4f, 2f, 1.8f, 1.8f, 3.6f, 1.4f, 1.3f});
+                String[] titulos = {"Pet e tutor", "Serviço", "Data e hora", "Observação", "Status", "Valor"};
+                float[] larguras = {2.4f, 2.2f, 1.8f, 3.6f, 1.4f, 1.3f};
+
+                PdfPTable tabela = new PdfPTable(larguras);
                 tabela.setWidthPercentage(100);
                 tabela.setHeaderRows(1);
 
-                for(String texto : List.of("Pet e tutor", "Serviço", "Data e hora", "Observação", "Status", "Valor")) {
+                for(String texto : titulos) {
                     PdfPCell celula = new PdfPCell(new Phrase(texto, cabecalho));
                     celula.setBackgroundColor(new Color(37, 99, 235));
                     celula.setPadding(5);
-                    celula.addElement(celula);
+                    tabela.addCell(celula);
                 }
 
                 DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -222,6 +227,7 @@ public class RelatorioService {
 
             documento.close();
         } catch (Exception e) {
+            log.error("Falha ao gerar PDF do histórico de {}", mes, e);
             throw new PetShopException("Não foi possível gerar o PDF.");
         }
         return saida.toByteArray();

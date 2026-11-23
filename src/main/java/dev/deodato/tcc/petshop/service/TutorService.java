@@ -23,8 +23,8 @@ public class TutorService {
     }
 
     public TutorResponse cadastrarTutor(TutorRequest tutorRequest) {
-        if(tutorRequest != null && tutorRepository.existsByEmail(tutorRequest.email())) {
-            throw new PetShopException("Já existe um Tutor cadastrado com esse email.");
+        if(temEmail(tutorRequest.email()) && tutorRepository.existsByEmail(tutorRequest.email().trim())) {
+            throw new PetShopException("Já existe um Tutor cadastrado com esse e-mail.");
         }
 
         Tutor tutor = tutorRequest.toEntity();
@@ -43,6 +43,11 @@ public class TutorService {
 
     public TutorResponse atualizar(Long id, TutorRequest tutorRequest) {
         Tutor tutor = buscarTutorPorId(id);
+
+        if(temEmail(tutorRequest.email()) && tutorRepository.existsByEmailAndIdNot(tutorRequest.email().trim(), id)) {
+            throw new PetShopException("Já existe Tutor cadastrado com esse e-mail.");
+        }
+
         tutorRequest.preencher(tutor);
         Tutor tutorAtualizado = tutorRepository.save(tutor);
         return TutorResponse.fromEntity(tutorAtualizado);
@@ -54,6 +59,10 @@ public class TutorService {
             throw new PetShopException("Não é possível excluir: tutor vinculado com pet.");
         }
         tutorRepository.delete(tutor);
+    }
+
+    private boolean temEmail(String email) {
+        return email != null && !email.isBlank();
     }
 
     public Tutor buscarTutorPorId(Long id) {

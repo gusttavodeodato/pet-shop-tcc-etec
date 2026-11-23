@@ -29,7 +29,7 @@ public record TutorRequest(
     public void preencher (Tutor tutor) {
         tutor.setNome(nome);
         tutor.setTelefone(telefone);
-        tutor.setEmail(email);
+        tutor.setEmail(email == null || email.isBlank() ? null : email.trim());
         tutor.setEndereco(endereco);
     }
 }

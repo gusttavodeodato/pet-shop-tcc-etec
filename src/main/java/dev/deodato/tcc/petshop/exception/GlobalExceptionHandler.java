@@ -1,5 +1,6 @@
 package dev.deodato.tcc.petshop.exception;
 
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +76,17 @@ public class GlobalExceptionHandler {
                 List.of("E-mail ou senha inválidos.")
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErroResponse> tratarAutenticacao(AuthenticationException ex) {
+        ErroResponse response = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Não autorizado",
+                List.of("E-mail ou senha inválidos.")
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
 

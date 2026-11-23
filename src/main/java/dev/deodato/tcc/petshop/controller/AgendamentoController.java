@@ -38,6 +38,16 @@ public class AgendamentoController {
         return agendamentoService.cancelar(id);
     }
 
+    @PutMapping("/{id}/confirmar")
+    public AgendamentoResponse confirmar(@PathVariable Long id) {
+        return agendamentoService.confirmar(id);
+    }
+
+    @PutMapping("/{id}/iniciar")
+    public AgendamentoResponse iniciar(@PathVariable Long id) {
+        return agendamentoService.iniciar(id);
+    }
+
     @PutMapping("/{id}/concluido")
     public AgendamentoResponse concluido(@PathVariable Long id) {
         return agendamentoService.concluido(id);

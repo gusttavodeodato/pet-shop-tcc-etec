@@ -5,8 +5,10 @@ import dev.deodato.tcc.petshop.dto.usuario.UsuarioLoginRequest;
 import dev.deodato.tcc.petshop.dto.usuario.UsuarioLoginResponse;
 import dev.deodato.tcc.petshop.dto.usuario.UsuarioRegisterRequest;
 import dev.deodato.tcc.petshop.dto.usuario.UsuarioRegisterResponse;
+import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.model.Usuario;
 import dev.deodato.tcc.petshop.repository.UsuarioRepository;
+import dev.deodato.tcc.petshop.util.Emails;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +39,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UsuarioLoginResponse> login(@Valid @RequestBody UsuarioLoginRequest request) {
+        String email = Emails.normalizar(request.email());
 
         // AUTENTICA ESSE USUARIO USANDO UM EMAIL E UMA SENHA
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(request.email(), request.senha());
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(email, request.senha());
         Authentication authenticate = authenticationManager.authenticate(token);
 
         Usuario usuario = (Usuario) authenticate.getPrincipal();
@@ -50,9 +53,18 @@ public class AuthController {
 
     @PostMapping("/registrar")
     public ResponseEntity<UsuarioRegisterResponse> registrar(@Valid @RequestBody UsuarioRegisterRequest request) {
+        String email = Emails.normalizar(request.email());
+
+        if(usuarioRepository.existsByEmail(email)) {
+            throw new PetShopException("Já existe uma conta com este e-mail.");
+        }
+
         Usuario usuario = new Usuario();
+        usuario.setEmail(email);
         usuario.setSenha(passwordEncoder.encode(request.senha()));
-        usuario.setEmail(request.email());
+        if(request.nome() != null && !request.nome().isBlank()) {
+            usuario.setNome(request.nome().trim());
+        }
         usuarioRepository.save(usuario);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(new UsuarioRegisterResponse(usuario.getEmail()));

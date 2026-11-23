@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 public interface TutorRepository extends JpaRepository<Tutor, Long> {
     boolean existsByEmail(String email);
 
+    boolean existsByEmailAndIdNot(String email, Long id);
+
     long countByCriadoEmGreaterThanEqual(LocalDateTime desde);
 
     long countByCriadoEmBetween(LocalDateTime inicio, LocalDateTime fim);

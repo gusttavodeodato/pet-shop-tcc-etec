@@ -2,6 +2,7 @@ package dev.deodato.tcc.petshop.service;
 
 import dev.deodato.tcc.petshop.dto.agendamento.AgendamentoRequest;
 import dev.deodato.tcc.petshop.dto.agendamento.AgendamentoResponse;
+import dev.deodato.tcc.petshop.dto.relatorio.AgendamentosResponse;
 import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.mapper.AgendamentoMapper;
 import dev.deodato.tcc.petshop.model.Agendamento;
@@ -85,6 +86,32 @@ public class AgendamentoService {
         Agendamento agendamento = buscarEntidadePorId(id);
         validarEmAberto(agendamento);
         agendamento.setStatus(StatusAgendamento.CANCELADO);
+        agendamentoRepository.save(agendamento);
+        return AgendamentoMapper.toResponse(agendamento);
+    }
+
+    @Transactional
+    public AgendamentoResponse confirmar(Long id) {
+        Agendamento agendamento = buscarEntidadePorId(id);
+
+        if(agendamento.getStatus() != StatusAgendamento.AGENDADO) {
+            throw new PetShopException("Só é possível confirmar um atendimento agendado.");
+        }
+
+        agendamento.setStatus(StatusAgendamento.CONFIRMADO);
+        agendamentoRepository.save(agendamento);
+        return AgendamentoMapper.toResponse(agendamento);
+    }
+
+    @Transactional
+    public AgendamentoResponse iniciar(Long id) {
+        Agendamento agendamento = buscarEntidadePorId(id);
+
+        if(agendamento.getStatus() != StatusAgendamento.AGENDADO && agendamento.getStatus() != StatusAgendamento.CONFIRMADO) {
+            throw new PetShopException("Só é possível inicar um atendimento agendado ou confirmado.");
+        }
+
+        agendamento.setStatus(StatusAgendamento.EM_ANDAMENTO);
         agendamentoRepository.save(agendamento);
         return AgendamentoMapper.toResponse(agendamento);
     }

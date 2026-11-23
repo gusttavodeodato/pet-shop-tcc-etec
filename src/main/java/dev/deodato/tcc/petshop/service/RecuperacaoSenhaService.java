@@ -5,6 +5,7 @@ import dev.deodato.tcc.petshop.model.TokenRecuperacaoSenha;
 import dev.deodato.tcc.petshop.model.Usuario;
 import dev.deodato.tcc.petshop.repository.TokenRecuperacaoRepository;
 import dev.deodato.tcc.petshop.repository.UsuarioRepository;
+import dev.deodato.tcc.petshop.util.Emails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class RecuperacaoSenhaService {
 
     @Transactional
     public void solicitar(String email) {
-        Optional<Usuario> encontrado = usuarios.findUsuarioByEmail(email);
+        Optional<Usuario> encontrado = usuarios.findUsuarioByEmail(Emails.normalizar(email));
         if(encontrado.isEmpty()) {
             return;
         }
@@ -80,6 +81,8 @@ public class RecuperacaoSenhaService {
         usuario.setSenha(passwordEncoder.encode(novaSenha));
         usuarios.save(usuario);
 
+        registro.setUsado(true);
+        tokens.save(registro);
     }
 
     private String gerarToken() {

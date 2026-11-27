@@ -13,11 +13,13 @@ import com.lowagie.text.pdf.PdfWriter;
 import dev.deodato.tcc.petshop.dto.relatorio.*;
 import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.model.Agendamento;
+import dev.deodato.tcc.petshop.model.ItemAgendamento;
 import dev.deodato.tcc.petshop.model.Tutor;
 import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
 import dev.deodato.tcc.petshop.repository.AgendamentoRepository;
 import dev.deodato.tcc.petshop.repository.PetRepository;
 import dev.deodato.tcc.petshop.repository.TutorRepository;
+import dev.deodato.tcc.petshop.util.Agendamentos;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,14 +79,15 @@ public class RelatorioService {
     }
 
     public List<ServicoPopular> servicosPopulares(YearMonth mes, int limite) {
-        List<Agendamento> concluidos = agendamentos
-                .findByStatusAndDataHoraBetween(StatusAgendamento.CONCLUIDO, inicio(mes), fim(mes));
+        List<Agendamento> concluidos = Agendamentos.semRepeticao(
+                agendamentos.findComItensByStatusAndDataHoraBetween(StatusAgendamento.CONCLUIDO, inicio(mes), fim(mes)));
 
         return concluidos.stream()
+                .flatMap(a -> a.getItens().stream())
                 .filter(a -> a.getServico() != null && a.getServico().getNome() != null)
                 .collect(Collectors.groupingBy(a -> a.getServico().getNome()))
                 .entrySet().stream()
-                .map(e -> new ServicoPopular(e.getKey(), e.getValue().size(), somar(e.getValue())))
+                .map(e -> new ServicoPopular(e.getKey(), e.getValue().size(), somarItens(e.getValue())))
                 .sorted(Comparator.comparingLong(ServicoPopular::quantidade).reversed()
                     .thenComparing(ServicoPopular::receita, Comparator.reverseOrder()))
                 .limit(limite)
@@ -207,7 +210,7 @@ public class RelatorioService {
 
                 for (Agendamento a : lista) {
                     tabela.addCell(celulaPdf(a.getPet().getNome() + "\n" + nomeTutor(a), normal, Element.ALIGN_LEFT));
-                    tabela.addCell(celulaPdf(a.getServico().getNome(), normal, Element.ALIGN_LEFT));
+                    tabela.addCell(celulaPdf(a.nomesDosServicos(), normal, Element.ALIGN_LEFT));
                     tabela.addCell(celulaPdf(a.getDataHora().format(formato), normal, Element.ALIGN_LEFT));
                     tabela.addCell(celulaPdf(a.getObservacao(), normal, Element.ALIGN_LEFT));
                     tabela.addCell(celulaPdf(a.getStatus() == StatusAgendamento.CONCLUIDO
@@ -234,14 +237,15 @@ public class RelatorioService {
     }
 
     private List<Agendamento> finalizadosDoMes(YearMonth mes) {
-        List<Agendamento> lista = agendamentos
-                .findByStatusInAndDataHoraBetweenOrderByDataHoraAsc(List.of(StatusAgendamento.CONCLUIDO, StatusAgendamento.CANCELADO), inicio(mes), fim(mes));
+       return Agendamentos.semRepeticao(agendamentos.findByStatusInAndDataHoraBetweenOrderByDataHoraDesc(List.of(StatusAgendamento.CONCLUIDO,
+               StatusAgendamento.CANCELADO), inicio(mes), fim(mes)));
+    }
 
-        Map<Long, Agendamento> semRepeticao = new LinkedHashMap<>();
-        for(Agendamento a : lista) {
-            semRepeticao.putIfAbsent(a.getId(), a );
-        }
-        return new ArrayList<>(semRepeticao.values());
+    private BigDecimal somarItens(List<ItemAgendamento> lista) {
+        return lista.stream()
+                .map(ItemAgendamento::getPrecoUnitario)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private PdfPCell celulaPdf(String texto, Font fonte, int alinhamento) {
@@ -267,7 +271,7 @@ public class RelatorioService {
     private boolean corresponde(Agendamento a, String termo) {
         List<String> campos = new ArrayList<>();
         campos.add(a.getPet().getNome());
-        campos.add(a.getServico().getNome());
+        a.getItens().forEach(i -> campos.add(i.getServico().getNome()));
         if(a.getPet().getTutores() != null) {
             a.getPet().getTutores().forEach(t -> campos.add(t.getNome()));
         }
@@ -289,7 +293,7 @@ public class RelatorioService {
                 a.getId(),
                 a.getPet().getNome(),
                 nomeTutor(a),
-                a.getServico().getNome(),
+                a.nomesDosServicos(),
                 a.getDataHora(),
                 a.getObservacao(),
                 a.getStatus(),

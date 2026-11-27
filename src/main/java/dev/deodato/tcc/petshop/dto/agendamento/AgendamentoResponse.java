@@ -4,6 +4,7 @@ import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record AgendamentoResponse(
         Long id,
@@ -12,6 +13,8 @@ public record AgendamentoResponse(
         String observacao,
         StatusAgendamento status,
         String pet,
-        String servico
+        String servico,
+        List<ServicoItem> servicos
 ) {
+    public record ServicoItem(Long id, String nome, BigDecimal preco) {}
 }

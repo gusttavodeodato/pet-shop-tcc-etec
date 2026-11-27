@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static dev.deodato.tcc.petshop.service.DashboardService.BRASIL;
 
@@ -33,19 +36,19 @@ public class AgendamentoService {
     }
 
     @Transactional
-    public AgendamentoResponse criar(AgendamentoRequest agendamento) {
-        if(agendamento.dataHora().isBefore(LocalDateTime.now(BRASIL))) {
+    public AgendamentoResponse criar(AgendamentoRequest request) {
+        if(request.dataHora().isBefore(LocalDateTime.now(BRASIL))) {
             throw new PetShopException("Não é possível agendar no passado.");
         }
 
-        Pet pet = petService.buscarEntidadePorId(agendamento.petID());
-        Servico servico = servicoService.buscarEntidadePorId(agendamento.servicoID());
+        Pet pet = petService.buscarEntidadePorId(request.petID());
+        List<Servico> servicos = buscarServicos(request);
 
-        if(agendamentoRepository.existsByPetAndDataHora(pet, agendamento.dataHora())) {
+        if(agendamentoRepository.existsByPetAndDataHora(pet, request.dataHora())) {
             throw new PetShopException("Já existe pet nesse horário agendado.");
         }
 
-        Agendamento entity = AgendamentoMapper.toEntity(agendamento, pet, servico);
+        Agendamento entity = AgendamentoMapper.toEntity(request, pet, servicos);
         entity = agendamentoRepository.save(entity);
         return AgendamentoMapper.toResponse(entity);
     }
@@ -56,7 +59,7 @@ public class AgendamentoService {
         validarEmAberto(agendamento);
 
         Pet pet = petService.buscarEntidadePorId(request.petID());
-        Servico servico = servicoService.buscarEntidadePorId(request.servicoID());
+        List<Servico> servicos = buscarServicos(request);
 
         boolean mudouHorario = !request.dataHora().equals(agendamento.getDataHora());
         if(mudouHorario && request.dataHora().isBefore(LocalDateTime.now(BRASIL))) {
@@ -67,15 +70,11 @@ public class AgendamentoService {
             throw new PetShopException("Já existe pet nesse horário agendado.");
         }
 
-        if(!agendamento.getServico().getId().equals(servico.getId())) {
-            agendamento.setTotal(servico.getPreco());
-        }
+        sincronizarItens(agendamento, servicos);
 
         agendamento.setDataHora(request.dataHora());
         agendamento.setObservacao(request.observacao());
-        agendamento.setServico(servico);
         agendamento.setPet(pet);
-
 
         agendamentoRepository.save(agendamento);
         return AgendamentoMapper.toResponse(agendamento);
@@ -153,6 +152,33 @@ public class AgendamentoService {
         agendamento.setStatus(StatusAgendamento.AGENDADO);
         agendamentoRepository.save(agendamento);
         return AgendamentoMapper.toResponse(agendamento);
+    }
+
+    private List<Servico> buscarServicos(AgendamentoRequest request) {
+        List<Long> ids = request.idsDosServicos();
+        if(ids.isEmpty()) {
+            throw new PetShopException("Informe ao menos um serviço,");
+        }
+        return ids.stream().map(servicoService::buscarEntidadePorId).toList();
+    }
+
+    private void sincronizarItens(Agendamento agendamento, List<Servico> servicos) {
+        Set<Long> desejados = servicos.stream()
+                .map(Servico::getId)
+                .collect(Collectors.toSet());
+
+        agendamento.getItens().removeIf(item -> !desejados.contains(item.getServico().getId()));
+
+        Set<Long> existentes = agendamento.getItens().stream()
+                .map(item -> item.getServico().getId())
+                .collect(Collectors.toSet());
+
+        for (Servico servico : servicos) {
+            if (!existentes.contains(servico.getId())) {
+                agendamento.adicionarItem(servico);
+            }
+        }
+        agendamento.recalcularTotal();
     }
 
     public void validarEmAberto(Agendamento agendamento) {

@@ -29,14 +29,16 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             Collection<StatusAgendamento> status, LocalDateTime inicio, LocalDateTime fim
     );
 
-    @EntityGraph(attributePaths = {"pet", "pet.tutores", "servico"})
-    List<Agendamento> findByStatusInAndDataHoraBetweenOrderByDataHoraAsc(
+    @EntityGraph(attributePaths = {"pet", "pet.tutores", "itens", "itens.servico"})
+    List<Agendamento> findByStatusInAndDataHoraBetweenOrderByDataHoraDesc(
             Collection<StatusAgendamento> status, LocalDateTime inicio, LocalDateTime fim
     );
 
     long countByStatusAndDataHoraBetween(StatusAgendamento status, LocalDateTime inicio, LocalDateTime fim);
 
     boolean existsByPetAndDataHoraAndIdNot(Pet pet, LocalDateTime dataHora, Long id);
-    boolean existsByServicoId(Long id);
     boolean existsByPetId(Long petId);
+
+    @EntityGraph(attributePaths = {"itens", "itens.servico"})
+    List<Agendamento> findComItensByStatusAndDataHoraBetween(StatusAgendamento statusAgendamento, LocalDateTime de, LocalDateTime ate);
 }

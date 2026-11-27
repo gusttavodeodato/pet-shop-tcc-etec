@@ -5,10 +5,12 @@ import dev.deodato.tcc.petshop.dto.dashboard.RelatorioResponse;
 import dev.deodato.tcc.petshop.dto.dashboard.ResumoResponse;
 import dev.deodato.tcc.petshop.exception.PetShopException;
 import dev.deodato.tcc.petshop.model.Agendamento;
+import dev.deodato.tcc.petshop.model.ItemAgendamento;
 import dev.deodato.tcc.petshop.model.MetaMensal;
 import dev.deodato.tcc.petshop.model.Tutor;
 import dev.deodato.tcc.petshop.model.enums.StatusAgendamento;
 import dev.deodato.tcc.petshop.repository.*;
+import dev.deodato.tcc.petshop.util.Agendamentos;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +50,8 @@ public class DashboardService {
         LocalDateTime de = inicio.atStartOfDay();
         LocalDateTime ate = fim.atTime(LocalTime.MAX);
 
-        List<Agendamento> concluidos = agendamentos
-                .findByStatusAndDataHoraBetween(StatusAgendamento.CONCLUIDO, de, ate);
+        List<Agendamento> concluidos = Agendamentos.semRepeticao(
+                agendamentos.findComItensByStatusAndDataHoraBetween(StatusAgendamento.CONCLUIDO, de, ate));
 
         long total = concluidos.size();
         BigDecimal receita = somar(concluidos);
@@ -58,13 +60,14 @@ public class DashboardService {
                 : receita.divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP);
 
         List<RelatorioResponse.ServicoPorTipo> porTipo = concluidos.stream()
+                .flatMap(a -> a.getItens().stream())
                 .filter(a -> a.getServico() != null && a.getServico().getTipoServico() != null)
                 .collect(Collectors.groupingBy(a -> a.getServico().getTipoServico()))
                         .entrySet().stream()
                         .map(e -> new RelatorioResponse.ServicoPorTipo(
                                 e.getKey().name(),
                                 e.getValue().size(),
-                                somar(e.getValue())))
+                                somarItens(e.getValue())))
                         .sorted(Comparator.comparingLong(RelatorioResponse.ServicoPorTipo::quantidade).reversed())
                         .toList();
 
@@ -131,11 +134,10 @@ public class DashboardService {
     public List<AgendaItem> agendaHoje() {
         LocalDate hoje = LocalDate.now(BRASIL);
 
-        return agendamentos
-                .findByDataHoraBetweenOrderByDataHoraAsc(hoje.atStartOfDay(), hoje.atTime(LocalTime.MAX))
-                .stream()
-                .map(this::paraAgendaItem)
-                .toList();
+        List<Agendamento> doDia = Agendamentos.semRepeticao(agendamentos.findByDataHoraBetweenOrderByDataHoraAsc(hoje.atStartOfDay(), hoje.atTime(LocalTime.MAX)));
+
+        return doDia.stream().map(this::paraAgendaItem).toList();
+
     }
 
     public Optional<AgendaItem> proximoAtendimento() {
@@ -155,10 +157,17 @@ public class DashboardService {
                 a.getDataHora().toLocalTime(),
                 a.getPet().getNome(),
                 nomeTutor(a),
-                a.getServico().getNome(),
+                a.nomesDosServicos(),
                 a.getTotal(),
                 a.getStatus()
         );
+    }
+
+    private BigDecimal somarItens(List<ItemAgendamento> lista) {
+        return lista.stream()
+                .map(ItemAgendamento::getPrecoUnitario)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     private String nomeTutor(Agendamento a) {
